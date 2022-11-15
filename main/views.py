@@ -12,7 +12,6 @@ userhandle = User(database)
 
 def homeView():
     if 'token' not in session or 'id' not in session: return redirect(url_for('logout')) # Go to the login screen if there is no token or user found
-
     user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
     if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
 
@@ -26,9 +25,7 @@ def homeView():
 
 def adminView():
     if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
-
     user = userhandle.isLoggedIn(session['token'], session['id'])
-    
     if user == []: return redirect(url_for('logout'))
     if user[2] == 0: return redirect(url_for('home'))
 
@@ -42,7 +39,6 @@ def adminView():
 
 def adminSpecificView(specific):
     if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
-
     user = userhandle.isLoggedIn(session['token'], session['id'])
     
     if user == []: return redirect(url_for('logout'))
@@ -90,9 +86,17 @@ def registerView():
 
 
 #! All below don't have any html in them
-def accountView(): return render_template('account.html')
-def productView(): return render_template('product_view.html')
-def buyView(): return render_template('but_product.html')
-def searchView(): return render_template('searching.html')
-def userlookupView(): return render_template('user_lookup.html')
-def reportView(): return render_template('report.html')
+
+'''
+    if 'token' not in session or 'id' not in session: return redirect(url_for('logout')) # Go to the login screen if there is no token or user found
+    user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
+
+'''
+
+def accountView(user): return render_template('account.html') #* Also allow to view other profiles through here
+def productView(productID): return render_template('product_view.html')
+def buyView(productId): return render_template('but_product.html')
+def searchView(search): return render_template('searching.html')
+def userlookupView(user): return render_template('user_lookup.html')
+def reportView(id): return render_template('report.html')
