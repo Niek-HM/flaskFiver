@@ -1,0 +1,41 @@
+/* Convert to this palette later -->
+https://coolors.co/palette/264653-2a9d8f-e9c46a-f4a261-e76f51
+*/
+
+* {
+    font-family: 'Courier New', monospace !important;
+}
+
+.copyright {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.section-dark {
+    height: auto; 
+    display:flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding-top: 20px; 
+    padding-bottom: 20px;
+}
+
+.section-light {
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.section-dark div {
+    width: 80%;
+    border-left: 1px solid white;
+    padding: 20px;
+}
+
+.section-light div {
+    width: 80%; 
+    border-left: 1px solid black; 
+    padding: 20px;
+}
