@@ -4,10 +4,18 @@
 
 {% block content %}
 
+<section class="bg-light section-light">
+    <div>
+        <h1>Account info -- Improve later</h1>
+        {% for i in user %}
+        <p>{{i}}</p>
+        {% endfor%}
+    </div>
+</section>
+<!--
+
 <section class="bg-dark section-dark">
 </section>
-
-<section class="bg-light section-light">
-</section>
+-->
 
 {% endblock %}

@@ -5,7 +5,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-def sendPersonal(receiver, head, body, file):
+def sendPersonal(receiver, head, body, file): #! Make sure it works since google disabled email macros some time ago...
     sender = 'noresponse.informatica@gmail.com'
     password = 'Informatica1!'
 

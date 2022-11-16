@@ -48,6 +48,14 @@ class User:
             if i not in allowed_chars: #* Only checks if every character is in a specific list of chars
                 errors.append(f'Invalid character(s) found.')
                 break
+        
+        letters = 0
+        for i in username:
+            if i not in '1234567890': letters += 1
+        
+        if letters == 0: errors.append('Your username can not be made of only numbers.')
+        
+                
 
         if username == '': errors.append('Username field can not be empty.')
         if password == '': errors.append('Password field can not be empty.')

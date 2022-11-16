@@ -94,7 +94,23 @@ def registerView():
 
 '''
 
-def accountView(user): return render_template('account.html') #* Also allow to view other profiles through here
+def accountView(userToView): 
+    if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
+    user = userhandle.isLoggedIn(session['token'], session['id'])
+    if user == []: return redirect(url_for('logout'))
+
+    if request.method == 'POST': pass #! Make changes to their account
+    
+    if not userToView.isnumeric(): 
+        try: userToView = database.read('user', '*', f'WHERE name="{userToView}"')[0]
+        except IndexError: userToView = []
+    else: 
+        try: userToView = database.read('user', '*', f'WHERE id="{userToView}"')[0]
+        except IndexError: userToView = []
+    
+    if userToView != []: return render_template('account.html', user=userToView)
+    else: return render_template('accountNotFound.html')
+
 def productView(productID): return render_template('product_view.html')
 def buyView(productId): return render_template('but_product.html')
 def searchView(search): return render_template('searching.html')
