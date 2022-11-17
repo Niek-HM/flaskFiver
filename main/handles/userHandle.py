@@ -43,8 +43,19 @@ class User:
 
         username = request.values.get('username')
         password = request.values.get('password')
+        conf_password = request.values.get('confirm-password')
+        first_name = request.values.get('first-name')
+        last_name = request.values.get('last-name')
+        email = request.values.get('email')
 
-        for i in (password+username):
+        if username == '': errors.append('Username field can not be empty.')
+        if password == '': errors.append('Password field can not be empty.')
+        elif password.__len__() < 5: errors.append('Password needs at least 5 characters.')
+        if email == '': errors.append('Email field can not be empty.')
+
+        if conf_password != password: errors.append('Password and Confirm Password are not the same')
+
+        for i in (password+username+first_name+last_name):
             if i not in allowed_chars: #* Only checks if every character is in a specific list of chars
                 errors.append(f'Invalid character(s) found.')
                 break
@@ -53,13 +64,7 @@ class User:
         for i in username:
             if i not in '1234567890': letters += 1
         
-        if letters == 0: errors.append('Your username can not be made of only numbers.')
-        
-                
-
-        if username == '': errors.append('Username field can not be empty.')
-        if password == '': errors.append('Password field can not be empty.')
-        elif password.__len__() < 5: errors.append('Password needs at least 5 characters.')
+        if letters == 0: errors.append('Your username must contain something other then numbers.')
                 
         if errors != []: return errors
         
@@ -67,7 +72,7 @@ class User:
         
         if user.__len__() != 0: return ['Username is already taken.'] #! Checks if no users are returned (This can only happen if the username is taken)
 
-        success = self.database.write('user', 'name, passwordHash, token', [username, encrypt(password), str(uuid4())])
+        success = self.database.write('user', 'name, passwordHash, token, first_name, last_name, email, pfp', [username, encrypt(password), str(uuid4()), first_name, last_name, email, '']) # Maybe allow pfp to be chosen here?
 
         if success: return [] # This should be True if the user was successfully saved
         return ['An error occured when saving to the database.']

@@ -32,3 +32,10 @@ body {
     padding: 0px; 
     margin: 0px;
 }
+
+form div label {
+    width: 100%;
+    text-align: left;
+    padding-top: 10px;
+    margin: auto;
+}
