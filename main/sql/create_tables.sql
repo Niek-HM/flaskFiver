@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS user(
     
     name varchar(24) NOT NULL UNIQUE,
     pfp varchar(64),
+    banner varchar(64),
 
     first_name varchar(24),
     last_name varchar(24),
@@ -12,6 +13,7 @@ CREATE TABLE IF NOT EXISTS user(
     token varchar(64) UNIQUE, -- Should have more stuff like age etc.
 
     isSeller BOOLEAN DEFAULT 0, --0 = False and 1 is True
+    privacy BOOLEAN DEFAULT 0,
     isAdmin BOOLEAN DEFAULT 0,
     isMod BOOLEAN DEFAULT 0
 );

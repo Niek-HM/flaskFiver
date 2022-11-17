@@ -104,11 +104,15 @@ def accountView(userToView):
     if not userToView.isnumeric(): 
         try: userToView = database.read('user', '*', f'WHERE name="{userToView}"')[0]
         except IndexError: userToView = []
+
     else: 
         try: userToView = database.read('user', '*', f'WHERE id="{userToView}"')[0]
         except IndexError: userToView = []
     
-    if userToView != []: return render_template('account.html', user=userToView)
+    same = 0
+    if userToView == user: same = 1
+    
+    if userToView != []: return render_template('account.html', user=userToView, same=same)
     else: return render_template('accountNotFound.html')
 
 def productView(productID): return render_template('product_view.html')
