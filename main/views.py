@@ -4,8 +4,9 @@ from flask import render_template, redirect, url_for, request, session
 from handles.databaseHandle import ReadWrite
 from handles.userHandle import User
 from handles.incryptionHandle import encrypt, checkHash
+from handles.sendEmailHandle import sendPersonal
 
-import ast
+import random
 
 database = ReadWrite()
 userhandle = User(database)
@@ -15,10 +16,13 @@ def homeView():
     user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
     if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
 
-    if request.method == 'POST': #! Still have to send the email and update the popup
+    if request.method == 'POST': #! Atm all post requests will be for vendor stuff
         try: 
-            email = ast.literal_eval(request.get_data().decode('utf-8'))['input'] # Send an email with username etc
-            worked = database.changeData('user', ['email'], [email], f'WHERE id={session["id"]}')
+            email = user[3] # Send an email with username etc
+            code = random.randint(100000, 999999)
+            sendPersonal(email, 'Varification Code', code)
+            return redirect(url_for('verify'), code=code)
+
         except Exception: worked = False #! Return something for the popup json to receive
     else: worked = None
     return render_template('home.html', worked=worked) # The user is logged in so we show the page
@@ -111,12 +115,17 @@ def accountView(userToView):
     
     same = 0
     if userToView == user: same = 1
-    
+
     if userToView != []: return render_template('account.html', user=userToView, same=same)
     else: return render_template('accountNotFound.html')
 
 def productView(productID): return render_template('product_view.html')
 def buyView(productId): return render_template('but_product.html')
 def searchView(search): return render_template('searching.html')
-def userlookupView(user): return render_template('user_lookup.html')
+
+def userlookupView(user): #* This is the most basic version i can make
+    if user == '*': user = ''
+    users = database.read('user', 'pfp, name, first_name, last_name, isSeller', f'WHERE name LIKE "%{user}%"')
+    return render_template('user_lookup.html', users=users, search=user)
+
 def reportView(id): return render_template('report.html')

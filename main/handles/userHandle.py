@@ -8,7 +8,7 @@ class User:
     def __init__(self, database): self.database = database
 
     def isLoggedIn(self, token, id):
-        user = self.database.read(tables='user', rows='id, token, isAdmin', specification=f'WHERE id="{id}"')[0] # Get the user with the same id
+        user = self.database.read(tables='user', rows='id, token, isAdmin, email', specification=f'WHERE id="{id}"')[0] # Get the user with the same id
 
         if not checkHash(user[1], token): return [] # Check if the token is valid #!Not sure if the [0] is needed
 

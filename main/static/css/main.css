@@ -39,3 +39,20 @@ https://coolors.co/palette/264653-2a9d8f-e9c46a-f4a261-e76f51
     border-left: 1px solid black; 
     padding: 20px;
 }
+
+.section-light-var {
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.section-light-var div {
+    width: 80%;
+    padding: 20px;
+}
+.section-light-var div div {
+    padding: 10px;
+}
