@@ -28,9 +28,14 @@ def homeView():
     return render_template('home.html', worked=worked) # The user is logged in so we show the page
 
 def verifyView():
+    if 'token' not in session or 'id' not in session: return redirect(url_for('logout')) # Go to the login screen if there is no token or user found
+    user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
+
     if request.method == 'POST':
         code = request.values.get('code')
-        if checkHash(code, session['code']): print('CORRECT') #! Set vendor value to true
+        if checkHash(code, session['code']): 
+            print('Corect code was given') #! Set vendor value to true
 
     return render_template('verify.html')
 
@@ -106,7 +111,7 @@ def registerView():
 
 '''
 
-def accountView(userToView): 
+def accountView(userToView):
     if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
     user = userhandle.isLoggedIn(session['token'], session['id'])
     if user == []: return redirect(url_for('logout'))
@@ -121,8 +126,8 @@ def accountView(userToView):
         try: userToView = database.read('user', '*', f'WHERE id="{userToView}"')[0]
         except IndexError: userToView = []
     
-    same = 0
-    if userToView == user: same = 1
+    same = False
+    if userToView == user: same = True
 
     if userToView != []: return render_template('account.html', user=userToView, same=same)
     else: return render_template('accountNotFound.html')

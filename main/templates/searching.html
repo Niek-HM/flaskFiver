@@ -4,10 +4,25 @@
 
 {% block content %}
 
-<section class="bg-dark section-dark">
-</section>
+<section class="bg-light section-light-var">
+    <div>
+        <h1>Results for '{{search}}'</h1>
 
-<section class="bg-light section-light">
+        <div class="row" style="width: auto;">
+            {% for user in users %}
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{user[1]}}</h5>
+                            <hr>
+                            <p class="card-text">{{user[2]}} {{user[3]}} - {{user[4]}}</p>
+                            <a href="#" class="btn btn-primary">View User</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </section>
 
 {% endblock %}
