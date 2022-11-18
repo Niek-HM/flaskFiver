@@ -2,8 +2,8 @@ from flask import render_template, redirect, url_for, request, session
 
 from handles.databaseHandle import ReadWrite
 from handles.userHandle import User
-from handles.incryptionHandle import encrypt, checkHash
 from handles.sendEmailHandle import sendPersonal
+from handles.incryptionHandle import encrypt, checkHash
 
 import random
 
@@ -20,11 +20,20 @@ def homeView():
             email = user[3] # Send an email with username etc
             code = random.randint(100000, 999999)
             sendPersonal(email, 'Varification Code', code)
-            return redirect(url_for('verify'), code=code)
+            session['code'] = encrypt(code)
+            return redirect(url_for('verify'))
 
         except Exception: worked = False #! Return something for the popup json to receive
     else: worked = None
     return render_template('home.html', worked=worked) # The user is logged in so we show the page
+
+def verifyView():
+    if request.method == 'POST':
+        code = request.values.get('code')
+        if checkHash(code, session['code']): print('CORRECT') #! Set vendor value to true
+
+    return render_template('verify.html')
+
 
 def adminView():
     if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
