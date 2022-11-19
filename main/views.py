@@ -132,13 +132,20 @@ def accountView(userToView):
     if userToView != []: return render_template('account.html', user=userToView, same=same)
     else: return render_template('accountNotFound.html')
 
-def productView(productID): return render_template('product_view.html')
-def buyView(productId): return render_template('but_product.html')
-def searchView(search): return render_template('searching.html')
+def productView(productID): 
+    product = productID #* Get the product from database
+    return render_template('product_view.html', product=product)
+
+def buyView(productId): 
+    return render_template('but_product.html', product=productId)
+
+def searchView(search): 
+    return render_template('searching.html', search=search)
 
 def userlookupView(user): #* This is the most basic version i can make
     if user == '*': user = ''
     users = database.read('user', 'pfp, name, first_name, last_name, isSeller', f'WHERE name LIKE "%{user}%"')
     return render_template('user_lookup.html', users=users, search=user)
 
-def reportView(id): return render_template('report.html', id=id)
+def reportView(id): 
+    return render_template('report.html', id=id)
