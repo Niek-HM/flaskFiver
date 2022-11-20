@@ -132,15 +132,18 @@ def accountView(userToView):
     if userToView != []: return render_template('account.html', user=userToView, same=same)
     else: return render_template('accountNotFound.html')
 
+##! Most stuff below still needs to check for POST or GET and do some more specific stuff, i just did the basic database reads that where needed
+
 def productView(productID): 
-    product = productID #* Get the product from database
+    product = database.read('products', 'id, title, body, price', f'WHERE id LIKE "%{productID}%"')
     return render_template('product_view.html', product=product)
 
-def buyView(productId): 
+def buyView(productId): #! One of the last things to do, don't forget haha
     return render_template('but_product.html', product=productId)
 
 def searchView(search): 
-    return render_template('searching.html', search=search)
+    products = database.read('products', 'id, title, body, price', f'WHERE title LIKE "%{search}%"')
+    return render_template('searching.html', search=products)
 
 def userlookupView(user): #* This is the most basic version i can make
     if user == '*': user = ''
@@ -148,4 +151,5 @@ def userlookupView(user): #* This is the most basic version i can make
     return render_template('user_lookup.html', users=users, search=user)
 
 def reportView(id): 
-    return render_template('report.html', id=id)
+    report = database.read('reports', 'id, reported, reporter, types, info', f'WHERE id="{id}"')
+    return render_template('report.html', id=report)
