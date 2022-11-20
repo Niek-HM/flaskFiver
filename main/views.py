@@ -18,7 +18,7 @@ def homeView():
     if request.method == 'POST': #! Atm all post requests will be for vendor stuff
         try: 
             email = user[3] # Send an email with username etc
-            code = random.randint(100000, 999999)
+            code = str(random.randint(100000, 999999))
             sendPersonal(email, 'Varification Code', code)
             session['code'] = encrypt(code)
             return redirect(url_for('verify'))
@@ -103,7 +103,6 @@ def registerView():
 
 
 #! All below don't have any html in them
-
 '''
     if 'token' not in session or 'id' not in session: return redirect(url_for('logout')) # Go to the login screen if there is no token or user found
     user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
