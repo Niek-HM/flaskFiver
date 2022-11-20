@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS user(
 
 CREATE TABLE IF NOT EXISTS products(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    show varchar(64),
+    img varchar(64),
+    description varchar(64),
     title varchar(28),
     body varchar(1024),
     price INTEGER
