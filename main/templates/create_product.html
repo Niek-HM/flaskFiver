@@ -1,21 +1,49 @@
 {% extends 'main.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Create Product{% endblock %}
 
 {% block content %}
 
-<section class="bg-light section-light">
-    <div>
-        <h1>New product</h1>
+<link rel="stylesheet" href="/static/css/login.css">
 
-        <form>
-            <input type="text"> <!-- title -->
-            <input type="text"> <!-- body -->
-            <input type="number"> <!-- price -->
-            <input type="file"> <!-- IMG -->
-            <button type="submit">Create</button> <!-- Create the product-->
+
+<div class="main">
+        <h1>Create Product</h1>
+
+        {% if errors != [] %}
+            <div class="error">
+                {% for error in errors %}
+                    <p>{{error}}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form action="" method="POST" enctype="multipart/form-data">
+            <div>
+                <label class="form-label" for="title">Title</label>
+                <input type="text" id="title" name="title" class="form-control form-control-lg" placeholder="Enter a valid title" />
+            </div>
+            <div> <!--* Make sure this works lol -->
+                <label class="form-label" for="file">Image</label>
+                <input type="file" id="file" name="file" class="form-control form-control-lg" placeholder="Enter a valid image" />
+            </div>
+            <div>
+                <label class="form-label" for="short-descr">Short description</label>
+                <input type="text" id="short-descr" name="short-descr" class="form-control form-control-lg" placeholder="Enter a short description" />
+            </div>
+            <div>
+                <label class="form-label" for="body">Title</label>
+                <input type="text" id="body" name="body" class="form-control form-control-lg" placeholder="Enter more specific info about your product" />
+            </div>
+            <div>
+                <label class="form-label" for="price">Price</label>
+                <input type="number" id="price" name="price" class="form-control form-control-lg" placeholder="Enter the cost of your product" />
+            </div>
+            
+            <br>
+
+            <p><button type="submit" value="Submit" class="btn btn-success" style="width: 25%;">Submit</button> OR <a class="btn btn-primary" href="/" role="button" style="width: 25%;">Cancel</a></p>
         </form>
     </div>
-</section>
 
 {% endblock %}

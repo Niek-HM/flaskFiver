@@ -5,7 +5,9 @@ from handles.userHandle import User
 from handles.sendEmailHandle import sendPersonal
 from handles.incryptionHandle import encrypt, checkHash
 
-import random
+from werkzeug.utils import secure_filename
+
+import random, os
 
 database = ReadWrite()
 userhandle = User(database)
@@ -162,3 +164,25 @@ def reportView(id): #! This needs an overhoul, pls do later when you are more su
 
     report = database.read('reports', 'id, reported, reporter, types, info', f'WHERE id="{id}"')
     return render_template('report.html', id=report)
+
+def createProductView():
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout'))
+    errors = []
+
+    if request.method == 'POST':
+        title = request.value.get('title')
+        
+        f = request.files['file']
+        path = f'/static/products/{user[1]}/{title}.{secure_filename(f.filename).split(".")[-1]}'
+
+        if os.path.exists(path): errors.append('You already have a product with this name')
+        else: f.save((path)) #*id+product_name+type
+
+        short_descr = request.values.get('short-descr')
+        body = request.values.get('body')
+        price = request.values.get('price')
+
+        #! Still have to save to the db
+
+    return render_template('create_product.html', errors=errors)
