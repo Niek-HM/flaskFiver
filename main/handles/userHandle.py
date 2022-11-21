@@ -7,9 +7,14 @@ allowed_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!
 class User:
     def __init__(self, database): self.database = database
 
-    def isLoggedIn(self, token: str, id: int):
-        user = self.database.read(tables='user', rows='id, token, isAdmin, email', specification=f'WHERE id="{id}"')[0] # Get the user with the same id
-
+    def isLoggedIn(self, session):
+        if 'token' not in session or 'id' not in session: return []
+        
+        token, id = session['token'], session['id']
+        try: 
+            user = self.database.read(tables='user', rows='id, token, isAdmin, email', specification=f'WHERE id="{id}"')[0] # Get the user with the same id
+        except IndexError: return []
+        
         if not checkHash(user[1], token): return [] # Check if the token is valid #!Not sure if the [0] is needed
 
         return user

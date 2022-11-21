@@ -11,8 +11,7 @@ database = ReadWrite()
 userhandle = User(database)
 
 def homeView():
-    if 'token' not in session or 'id' not in session: return redirect(url_for('logout')) # Go to the login screen if there is no token or user found
-    user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
 
     if request.method == 'POST': #! Atm all post requests will be for vendor stuff
@@ -28,8 +27,7 @@ def homeView():
     return render_template('home.html', worked=worked) # The user is logged in so we show the page
 
 def verifyView():
-    if 'token' not in session or 'id' not in session: return redirect(url_for('logout')) # Go to the login screen if there is no token or user found
-    user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
 
     if request.method == 'POST':
@@ -41,8 +39,7 @@ def verifyView():
 
 
 def adminView():
-    if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
-    user = userhandle.isLoggedIn(session['token'], session['id'])
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
     if user[2] == 0: return redirect(url_for('home'))
 
@@ -55,8 +52,7 @@ def adminView():
     return render_template('admin.html', tables=all_table_names)
 
 def adminSpecificView(specific):
-    if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
-    user = userhandle.isLoggedIn(session['token'], session['id'])
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
     
     if user == []: return redirect(url_for('logout'))
     if user[2] == 0: return redirect(url_for('home'))
@@ -111,8 +107,7 @@ def registerView():
 '''
 
 def accountView(userToView):
-    if 'token' not in session or 'id' not in session: return redirect(url_for('logout'))
-    user = userhandle.isLoggedIn(session['token'], session['id'])
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
 
     if request.method == 'POST': pass #! Make changes to their account
@@ -134,21 +129,36 @@ def accountView(userToView):
 ##! Most stuff below still needs to check for POST or GET and do some more specific stuff, i just did the basic database reads that where needed
 
 def productView(productID): 
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout'))
+
     product = database.read('products', 'id, title, body, price', f'WHERE id LIKE "%{productID}%"')
     return render_template('product_view.html', product=product)
 
 def buyView(productId): #! One of the last things to do, don't forget haha
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout'))
+
     return render_template('but_product.html', product=productId)
 
 def searchView(search): 
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout'))
+
     products = database.read('products', 'id, title, body, price', f'WHERE title LIKE "%{search}%"')
     return render_template('searching.html', search=products)
 
 def userlookupView(user): #* This is the most basic version i can make
+    user_ = userhandle.isLoggedIn(session) # Check if the session data is valid
+    if user_ == []: return redirect(url_for('logout'))
+
     if user == '*': user = ''
     users = database.read('user', 'pfp, name, first_name, last_name, isSeller', f'WHERE name LIKE "%{user}%"')
     return render_template('user_lookup.html', users=users, search=user)
 
-def reportView(id): 
+def reportView(id): #! This needs an overhoul, pls do later when you are more sure
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout'))
+
     report = database.read('reports', 'id, reported, reporter, types, info', f'WHERE id="{id}"')
     return render_template('report.html', id=report)
