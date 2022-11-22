@@ -25,7 +25,8 @@
             </div>
             <div> <!--* Make sure this works lol -->
                 <label class="form-label" for="file">Image</label>
-                <input type="file" id="file" name="file" class="form-control form-control-lg" placeholder="Enter a valid image" />
+                <div style="width: 100%; align-content: left; align-items: left;" id="fileInputName"><button class="btn btn-secondary" onclick="selectFile()">Choose file</button> No image selected.</div>
+                <input type="file" id="file" style="display: none; height:0px; width: 0px;" name="file" class="form-control form-control-lg" placeholder="Enter a valid image" />
             </div>
             <div>
                 <label class="form-label" for="short-descr">Short description</label>

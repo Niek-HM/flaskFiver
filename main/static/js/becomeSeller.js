@@ -8,3 +8,10 @@ function showPopup() {
         xhr.send(JSON.stringify({input: input}));
     }
 };
+
+function selectFile() {
+    var fileInput = document.getElementById('file');   
+    
+    fileInput.click();
+    document.getElementById('fileInputName').textContent = fileInput.files[0].name;
+}

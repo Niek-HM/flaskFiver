@@ -147,7 +147,12 @@ def searchView(search):
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
 
-    products = database.read('products', 'id, title, body, price', f'WHERE title LIKE "%{search}%"')
+    search = search.split(' ')
+    cmd = ''
+    for i in search: cmd += f'title LIKE "%{i}%" OR '
+    cmd = cmd[:-4] #* Remove the last or and spaces
+
+    products = database.read('products', 'id, title, body, price', f'WHERE {cmd}') #! Not tested if this works
     return render_template('searching.html', search=products)
 
 def userlookupView(user): #* This is the most basic version i can make
