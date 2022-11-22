@@ -168,9 +168,9 @@ def reportView(id): #! This needs an overhoul, pls do later when you are more su
 def createProductView():
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
-    errors = []
 
     if request.method == 'POST':
+        errors = []
         title = request.value.get('title')
         
         f = request.files['file']
@@ -183,6 +183,11 @@ def createProductView():
         body = request.values.get('body')
         price = request.values.get('price')
 
-        #! Still have to save to the db
+        if errors: return render_template('create_product.html', errors=errors)
 
-    return render_template('create_product.html', errors=errors)
+        saved = database.write('products', 'img, description, title, body, price', [path, short_descr, title, body, price])
+        
+        if saved: return redirect(url_for('home')) #! Should reroute to the product itself
+        else: return render_template('create_product.html', errors=['There was an error when saving to the database.'])
+
+    return render_template('create_product.html', errors=[])
