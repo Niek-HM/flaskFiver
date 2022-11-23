@@ -10,8 +10,13 @@ function showPopup() {
 };
 
 function selectFile() {
-    var fileInput = document.getElementById('file');   
-    
-    fileInput.click();
-    document.getElementById('fileInputName').textContent = fileInput.files[0].name;
-}
+    $(document.getElementById('file')).click();
+};
+
+$(document).ready(function() {
+    $(document.getElementById('file')).change(function(e) {
+        document.getElementById('fileInputName').textContent = document.getElementById('file').files[0].name;
+        document.getElementById('fileButton').classList.remove('btn-secondary');
+        document.getElementById('fileButton').classList.add('btn-primary');
+    });
+});

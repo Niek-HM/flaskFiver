@@ -28,11 +28,6 @@ class User:
 
         if username == '': errors.append('Username field can not be empty.')
         if password == '': errors.append('Password field can not be empty.')
-                
-        for i in (password+username):
-            if i not in allowed_chars:
-                errors.append(f'Invalid character(s) found.')
-                break
 
         if errors != []: return errors, None, None
 
@@ -60,7 +55,7 @@ class User:
 
         if conf_password != password: errors.append('Password and Confirm Password are not the same')
 
-        for i in (password+username+first_name+last_name):
+        for i in (password+username+first_name+last_name+email+conf_password):
             if i not in allowed_chars: #* Only checks if every character is in a specific list of chars
                 errors.append(f'Invalid character(s) found.')
                 break
@@ -69,7 +64,7 @@ class User:
         for i in username:
             if i not in '1234567890': letters += 1
         
-        if letters == 0: errors.append('Your username must contain something other then numbers.')
+        if letters == 0: errors.append('Your username must contain alphabetical characters.')
                 
         if errors != []: return errors
         

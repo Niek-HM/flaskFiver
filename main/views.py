@@ -12,6 +12,8 @@ import random, os
 database = ReadWrite()
 userhandle = User(database)
 
+dir_ = os.path.dirname(os.path.realpath(__file__))
+
 def homeView():
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
@@ -79,7 +81,7 @@ def loginView():
 
         return redirect(url_for('home'))
 
-    else: return render_template('login.html', errors=[])
+    return render_template('login.html', errors=[])
 
 def logoutView():
     session.pop('token', None) # Clear token from the session data
@@ -97,7 +99,7 @@ def registerView():
 
         return redirect(url_for('login'))
     
-    else: return render_template('register.html', errors=[])
+    return render_template('register.html', errors=[])
 
 
 #! All below don't have any html in them
@@ -176,20 +178,25 @@ def createProductView():
 
     if request.method == 'POST':
         errors = []
-        title = request.value.get('title')
+        title = request.values.get('title')
         
         f = request.files['file']
-        path = f'/static/products/{user[1]}/{title}.{secure_filename(f.filename).split(".")[-1]}'
+        if f != '':
+            path = f'{dir_}/static/products/{user[0]}_{title}.{secure_filename(f.filename).split(".")[-1]}'
 
-        if os.path.exists(path): errors.append('You already have a product with this name')
-        else: f.save((path)) #*id+product_name+type
+            if os.path.exists(path): errors.append('You already have a product with this name')
+            else: f.save((path)) #*id+product_name+type
+        else: path = 'DEFAULT'
 
         short_descr = request.values.get('short-descr')
         body = request.values.get('body')
         price = request.values.get('price')
 
+        if not short_descr or not body or not price: errors.append('Make sure all fields where correctly filled in.')
+
         if errors: return render_template('create_product.html', errors=errors)
 
+        path = path.split('/')[-1] # Only save the filename
         saved = database.write('products', 'img, description, title, body, price', [path, short_descr, title, body, price])
         
         if saved: return redirect(url_for('home')) #! Should reroute to the product itself
