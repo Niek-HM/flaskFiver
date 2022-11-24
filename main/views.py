@@ -117,15 +117,22 @@ def accountView(userToView):
     if request.method == 'POST': pass #! Make changes to their account
     
     if not userToView.isnumeric(): 
-        try: userToView = database.read('user', '*', f'WHERE name="{userToView}"')[0]
+        try: 
+            userToView = list(database.read('user', 'id, name, pfp, banner, first_name, last_name, email, isSeller, privacy, isMod, isAdmin', f'WHERE name="{userToView}"')[0])
+            if userToView[7] == 1: 
+                del userToView[3:5] # Deletes the 4- and 5th item form the list
+                del userToView[8]
         except IndexError: userToView = []
 
     else: 
-        try: userToView = database.read('user', '*', f'WHERE id="{userToView}"')[0]
+        try: userToView = list(database.read('user', 'id, name, pfp, banner, first_name, last_name, email, isSeller, privacy, isMod, isAdmin', f'WHERE id="{userToView}"')[0])
         except IndexError: userToView = []
+
+    if userToView != []:
+        userToView[2] = userToView[2] if userToView[2] != None else 'default.png'
+        userToView[3] = userToView[3] if userToView[3] != None else 'default.png'
     
-    same = False
-    if userToView == user: same = True
+    same = 1 if userToView == user else 0
 
     if userToView != []: return render_template('account.html', user=userToView, same=same)
     else: return render_template('accountNotFound.html')

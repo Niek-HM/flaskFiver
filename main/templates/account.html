@@ -13,15 +13,20 @@
         {% endif %}
 
         <img src="/static/img/user/banner/{{user[3]}}" style="width: 100%;"> <!-- banner -- maybe make this a file input so that you can change it -->
-        <br>
         <img src="/static/img/user/pfp/{{user[2]}}" style="width: 25%;"> <!-- Path to pfp -- allow ppl to change this later-->
         
-        {{user[0]}} <!-- ID -->
-        {{user[1]}} <!-- USERNAME -->
-        {{user[4]}} <!-- First Name-->
-        {{user[5]}} <!-- Last Name -->
-        {{user[7]}} <!-- email -->
-        {{user[9]}} <!-- Is Vendor -->
+        {{user[0]}} <!-- id-->
+        {{user[1]}} <!-- name -->
+        {{user[4]}} <!-- First name-->
+        {{user[5]}} <!-- last_name-->
+        {{user[6]}} <!-- email -->
+        {{user[7]}} <!-- is seller -->
+        {{user[8]}} <!-- privacy -->
+        {{user[9]}} <!-- is mod -->
+        {{user[10]}} <!-- id admin -->
+
+        <br><br>
+        {{user}} <!--! For some reason banner {{user[3]}} and email {{user[6]}} are missing-->
     </div>
 </section>
 <!--
