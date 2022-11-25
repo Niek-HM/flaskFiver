@@ -32,7 +32,7 @@ class MainApp:
         self.app.add_url_rule('/account/<userToView>/', 'account', accountView, methods=['GET', 'POST'])
         self.app.add_url_rule('/product/<id>/', 'viewproduct', productView, methods=['GET', 'POST'])
         self.app.add_url_rule('/buy/<productID>/', 'buyproduct', buyView, methods=['GET', 'POST'])
-        self.app.add_url_rule('/search/?q=<search>/', 'search', searchView, methods=['GET', 'POST'])
+        self.app.add_url_rule('/search/<search>/', 'search', searchView, methods=['GET', 'POST'])
         self.app.add_url_rule('/user/<user>/', 'userlookup', userlookupView, methods=['GET', 'POST'])
         self.app.add_url_rule('/report/<id>/', 'report', reportView, methods=['GET', 'POST']) #! Check this out later
         self.app.add_url_rule('/verify/', 'verify', verifyView, methods=['GET', 'POST'])

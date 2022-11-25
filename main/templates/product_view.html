@@ -5,7 +5,12 @@
 {% block content %}
 
 <section class="bg-light section-light">
-    {{product}}
+    <img src="/static/img/user/product/{{product[0]}}"> <!-- IMG -->
+
+    {{product[2]}}<!-- Title -->
+    {{product[1]}} <!-- Description -->
+    {{product[3]}} <!-- Body -->
+    {{product[4]}} <!-- Price-->
 </section>
 
 {% endblock %}

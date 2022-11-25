@@ -9,14 +9,14 @@
         <h1>Results for '{{search}}'</h1>
 
         <div class="row" style="width: auto;">
-            {% for user in users %}
+            {% for product in products %}
                 <div class="col-sm-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">{{user[1]}}</h5>
+                            <h5 class="card-title">{{product[1]}}</h5>
                             <hr>
-                            <p class="card-text">{{user[2]}} {{user[3]}} - {{user[4]}}</p>
-                            <a href="#" class="btn btn-primary">View User</a>
+                            <p class="card-text">{{product[2]}} {{product[3]}} - {{product[4]}}</p>
+                            <a href="#" class="btn btn-primary">View Product</a>
                         </div>
                     </div>
                 </div>

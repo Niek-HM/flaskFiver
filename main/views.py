@@ -143,7 +143,7 @@ def productView(productID):
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
 
-    product = database.read('products', 'id, title, body, price', f'WHERE id LIKE "%{productID}%"')
+    product = database.read('products', 'img, description, title, body, price', f'WHERE id="{productID}"')[0]
     return render_template('product_view.html', product=product)
 
 def buyView(productId): #! One of the last things to do, don't forget haha
@@ -156,13 +156,14 @@ def searchView(search):
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
 
-    search = search.split(' ')
+    if search == '*': search = ''
+    search = search.split('_')
     cmd = ''
     for i in search: cmd += f'title LIKE "%{i}%" OR '
     cmd = cmd[:-4] #* Remove the last or and spaces
 
     products = database.read('products', 'id, title, body, price', f'WHERE {cmd}') #! Not tested if this works
-    return render_template('searching.html', search=products)
+    return render_template('searching.html', products=products, search=search)
 
 def userlookupView(user): #* This is the most basic version i can make
     user_ = userhandle.isLoggedIn(session) # Check if the session data is valid
