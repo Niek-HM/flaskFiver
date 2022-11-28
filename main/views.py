@@ -173,12 +173,19 @@ def userlookupView(user): #* This is the most basic version i can make
     users = database.read('user', 'pfp, name, first_name, last_name, isSeller', f'WHERE name LIKE "%{user}%"')
     return render_template('user_lookup.html', users=users, search=user)
 
-def reportView(id): #! This needs an overhoul, pls do later when you are more sure
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+def reportView(id):
+    user = userhandle.isLoggedIn(session)  # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
 
-    report = database.read('reports', 'id, reported, reporter, types, info', f'WHERE id="{id}"')
-    return render_template('report.html', id=report)
+    if request.method == 'POST':
+        pass #! Get data and save it.
+    
+    if id.isnumeric():
+        user_ = database.read('user', 'id, name', f'WHERE id="{id}"')[0]
+        users = database.read('user', 'id, name', f'WHERE NOT id="{id}"')
+        return render_template('report.html', user=user_, users=users)
+    
+    else: return redirect(url_for('home')) #* Do something else
 
 def createProductView():
     user = userhandle.isLoggedIn(session) # Check if the session data is valid

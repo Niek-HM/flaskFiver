@@ -4,11 +4,42 @@
 
 {% block content %}
 
-<section class="bg-light section-light">
-    <input type="text"> <!-- Should be multiple choice for all users -->
-    <input type="text"> <!-- Input for type of offence -->
-    <input type="text"> <!-- Aditional information -->
-    <button type="submit">Submit</button>
-</section>
+<link rel="stylesheet" href="/static/css/login.css">
 
-{% endblock %}
+<div class="main">
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        <div>
+            <label class="form-label" for="user_">User to report</label>
+            <select id="user_" name="user_" class="form-control form-control-lg">
+                <option>{{user[0]}} - {{user[1]}}</option>
+                
+                {% for i in users %}
+                    <option>{{i[0]}} - {{i[1]}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label class="form-label" for="type">Type of offence</label>
+            <select id="type" name="type" class="form-control form-control-lg">
+                <option>Spam</option>
+                <option>Scamming</option>
+                <option>Impersonating</option>
+                <option>Other (please specify)</option>
+                <option>ETC</option> <!--! Should be more refined? -->
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label" for="descr">Description</label>
+            <input type="text" id="descr" name="descr" class="form-control form-control-lg" placeholder="Describe what happned." />
+        </div>
+
+        <br>
+        <button type="submit" value="Submit" class="btn btn-success" style="width: 25%;">Submit</button>
+    </form>
+    <hr>
+
+    <!--! NO CLOSING TAG SO THE FOOTER GETS INCLUDED -->
+    {% endblock %}
