@@ -178,7 +178,12 @@ def reportView(id):
     if user == []: return redirect(url_for('logout'))
 
     if request.method == 'POST':
-        pass #! Get data and save it.
+        reported = request.values.get('user_').split(' - ')[0] #* Get the id
+        types = request.values.get('types')
+        info = request.values.get('descr')
+
+        saved = database.write('reports', 'reported, reporter, types, info', [reported, user[0], types, info])
+        if saved: return redirect(url_for('home'))
     
     if id.isnumeric():
         user_ = database.read('user', 'id, name', f'WHERE id="{id}"')[0]

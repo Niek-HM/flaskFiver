@@ -12,11 +12,9 @@
         <div>
             <label class="form-label" for="user_">User to report</label>
             <select id="user_" name="user_" class="form-control form-control-lg">
-                <option>{{user[0]}} - {{user[1]}}</option>
+                {% if user != [] %}<option>{{user[0]}} - {{user[1]}}</option>{% endif %}
                 
-                {% for i in users %}
-                    <option>{{i[0]}} - {{i[1]}}</option>
-                {% endfor %}
+                {% for i in users %}<option>{{i[0]}} - {{i[1]}}</option>{% endfor %}
             </select>
         </div>
         
