@@ -2,13 +2,22 @@ CREATE TABLE IF NOT EXISTS user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
     name varchar(24) NOT NULL UNIQUE,
-    pfp varchar(64),
-    banner varchar(64),
+    pfp varchar(64), -- maybe save as BLOB data type??
 
     first_name varchar(24),
     last_name varchar(24),
     passwordHash BINARY(64) NOT NULL,
+    
     email varchar(319) UNIQUE,
+    phone varchar(24),
+    rating TINYINT,
+    
+    website varchar(24),
+    github varchar(24),
+    insta varchar(24),
+    facebook varchar(24),
+    twitter varchar(24),
+
     
     token varchar(64) UNIQUE, -- Should have more stuff like age etc.
 

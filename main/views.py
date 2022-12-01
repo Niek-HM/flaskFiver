@@ -118,19 +118,18 @@ def accountView(userToView):
     
     if not userToView.isnumeric(): 
         try: 
-            userToView = list(database.read('user', 'id, name, pfp, banner, first_name, last_name, email, isSeller, privacy, isMod, isAdmin', f'WHERE name="{userToView}"')[0])
+            userToView = list(database.read('user', 'name, pfp, first_name, last_name, email, phone, rating, website, github, insta, facebook, twitter, isSeller, privacy, isMod, isAdmin', f'WHERE name="{userToView}"')[0])
             if userToView[7] == 1: 
                 del userToView[3:5] # Deletes the 4- and 5th item form the list
                 del userToView[8]
         except IndexError: userToView = []
 
     else: 
-        try: userToView = list(database.read('user', 'id, name, pfp, banner, first_name, last_name, email, isSeller, privacy, isMod, isAdmin', f'WHERE id="{userToView}"')[0])
+        try: userToView = list(database.read('user', 'name, pfp, first_name, last_name, email, phone, rating, website, github, insta, facebook, twitter, isSeller, privacy, isMod, isAdmin', f'WHERE id="{userToView}"')[0])
         except IndexError: userToView = []
 
     if userToView != []:
         userToView[2] = userToView[2] if userToView[2] != None else 'default.png'
-        userToView[3] = userToView[3] if userToView[3] != None else 'default.png'
     
     same = 1 if userToView == user else 0
 
