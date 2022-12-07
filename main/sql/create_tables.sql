@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS ratings( -- Ratings for users
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     rating TINYINT,
     for INTEGER FOREIGNKEY REFERENCES user(id)
-)
+);
 
 CREATE TABLE IF NOT EXISTS reports( -- Reporting scammers etc
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,4 +83,4 @@ CREATE TABLE IF NOT EXISTS messages( -- Send messages to other users
     title varchar(64),
     body varchar(256)
     -- Maybe add file support?
-)
+);

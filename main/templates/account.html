@@ -28,11 +28,7 @@
         <div class="row">
             <div class="col">
                 <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">User</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">User Profile</li>
-                    </ol> <!-- PROB REMOVE LATER -->
+                    {% if same == '1' %}<h1>My account</h1>{% else %}<h1>{{user[1]}}'s account</h1>{% endif %}
                 </nav>
             </div>
         </div>
@@ -41,9 +37,9 @@
             <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body text-center">
-                        <img src="/static/img/user/pfp/{{user[1]}}"
+                        <img src="/static/img/user/pfp/{{user[2]}}"
                             alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-                        {% if user[15] or user[16] %}<i class="bi bi-check"></i>{% endif %}<h5 class="my-3"> {{user[1]}}</h5> <!--* Username, with checkmark if admin/mod -->
+                        {% if user[15] or user[16] %}<i class="bi bi-check"></i>{% endif %}<h5 class="my-3"> <b>{{user[1]}}</b></h5> <!--* Username, with checkmark if admin/mod -->
                         <p class="text-muted mb-1">Seller: {{user[13]}}</p>
                         <p class="text-muted mb-1">{{user[7]}}</p> <!-- Rating -->
                         <div class="d-flex justify-content-center mb-2">
@@ -112,21 +108,29 @@
                     </div>
                 </div>
                 <div class="row">
-                    {{ for i in products }}
-                    
+                    {% for product in products %}
                         <div class="col-md-6">
                             <div class="card mb-4 mb-md-0">
                                 <div class="card-body">
-                                    <p class="mb-4"><span class="text-primary font-italic me-1">i[3]</span> i[5]</p>
-                                    <p class="mb-1" style="font-size: .77rem;">i[2]</p>
+                                    <p class="mb-4"><span class="text-primary font-italic me-1">{{product[3]}}</span> {{product[5]}}</p>
+                                    <p class="mb-1" style="font-size: .77rem;">{{product[2]}}</p>
                                     <div class="progress rounded" style="height: 5px;">
                                         <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    
-                    {{endfor}} <!--! Still needs propper rating-->
+                    {% endfor %} <!--! Still needs propper rating-->
+
+                    {% if products == []%}
+                        <div class="col-md-6">
+                            <div class="card mb-4 mb-md-0">
+                                <div class="card-body">
+                                    <p class="mb-4"><span class="text-primary font-italic me-1">No products</span> (This user does not sell anything atm.)</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

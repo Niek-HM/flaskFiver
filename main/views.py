@@ -132,11 +132,12 @@ def accountView(userToView):
         try: userToView = list(database.read('user', 'id, name, pfp, first_name, last_name, email, phone, rating, website, github, insta, facebook, twitter, isSeller, privacy, isMod, isAdmin', f'WHERE id="{userToView}"')[0])
         except IndexError: userToView = []
 
+    products = []
+    same = '0'
     if userToView != []:
         userToView[2] = userToView[2] if userToView[2] != None else 'default.png'
-    
-    same = 1 if userToView == user else 0
-    products = database.read('products', 'creator, img, description, title, body, price', f'WHERE creator="{userToView[0]}"') # Still need to get a rating
+        products = database.read('products', 'creator, img, description, title, body, price', f'WHERE creator="{userToView[0]}"') # Still need to get a rating
+        same = '1' if userToView[0] == user[0] else '0'
 
     if userToView != []: return render_template('account.html', user=userToView, same=same, products=products)
     else: return render_template('accountNotFound.html')
@@ -221,7 +222,7 @@ def createProductView():
         if errors: return render_template('create_product.html', errors=errors)
 
         path = path.split('/')[-1] # Only save the filename
-        saved = database.write('products', 'img, description, title, body, price', [path, short_descr, title, body, price])
+        saved = database.write('products', 'img, description, title, body, price, creator', [path, short_descr, title, body, price, user[0]])
         
         if saved: return redirect(url_for('home')) #! Should reroute to the product itself
         else: return render_template('create_product.html', errors=['There was an error when saving to the database.'])
