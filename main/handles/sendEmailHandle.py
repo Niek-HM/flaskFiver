@@ -25,16 +25,16 @@ def sendPersonal(receiver: str, head: str, body: str, file: str): #! Make sure i
         server.login(sender, password)
         server.sendmail(sender, receiver, text)
 
-def sendMass(receivers: str, head: str, body: str, file: str):
+def sendMass(receivers: list, head: str, body: str, file: str):
     sender = 'noresponse.informatica@gmail.com'
-    password = 'Informatica1!'
+    password = 'yvdsktarqhgusntd'
 
     message = MIMEMultipart()
     message['From'] = sender
-    message['Bcc'] = receivers
+    message['Bcc'] = ", ".join(receivers)
     message['Subject'] = head
 
-    message.attach(MIMEText(body, "plain"))
+    message.attach(MIMEText(body, "html"))
 
     # Maybe add file support
 

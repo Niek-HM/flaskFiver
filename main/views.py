@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, request, session
 
 from handles.databaseHandle import ReadWrite
 from handles.userHandle import User
-from handles.sendEmailHandle import sendPersonal
+from handles.sendEmailHandle import sendPersonal, sendMass
 from handles.incryptionHandle import encrypt, checkHash
 
 from werkzeug.utils import secure_filename
@@ -186,6 +186,8 @@ def reportView(id):
         reported = request.values.get('user_').split(' - ')[0] #* Get the id
         types = request.values.get('types')
         info = request.values.get('descr')
+        #! Improve the styling later
+        sendMass(receivers=['niekmeijlink@gmail.com', user[3]], head=f'Report from {user[3]}', body=f'<h1><b>Report submitted</b></h1><p> - {types}</p>\n\n<p>{info}</p>', file='')
 
         saved = database.write('reports', 'reported, reporter, types, info', [reported, user[0], types, info])
         if saved: return redirect(url_for('home'))
