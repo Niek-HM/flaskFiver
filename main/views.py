@@ -140,22 +140,25 @@ def accountView(userToView):
         same = '1' if userToView[0] == user[0] else '0'
 
     if userToView != []: return render_template('account.html', user=userToView, same=same, products=products)
-    else: return render_template('accountNotFound.html')
+    else: return render_template('notFound.html')
 
 ##! Most stuff below still needs to check for POST or GET and do some more specific stuff, i just did the basic database reads that where needed
 
-def productView(productID): 
+def productView(id): 
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
 
-    product = database.read('products', 'img, description, title, body, price', f'WHERE id="{productID}"')[0]
-    return render_template('product_view.html', product=product)
+    try:
+        if id.isnumeric(): product = database.read('products', 'img, description, title, body, price', f'WHERE id="{id}"')[0]
+        else: pass # Search by name or somthing??
+        return render_template('product_view.html', product=product)
+    except: return render_template('notFound.html')
 
-def buyView(productId): #! One of the last things to do, don't forget haha
+def buyView(id): #! One of the last things to do, don't forget haha
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
     if user == []: return redirect(url_for('logout'))
 
-    return render_template('but_product.html', product=productId)
+    return render_template('but_product.html', product=id)
 
 def searchView(search): 
     user = userhandle.isLoggedIn(session) # Check if the session data is valid
@@ -230,3 +233,12 @@ def createProductView():
         else: return render_template('create_product.html', errors=['There was an error when saving to the database.'])
 
     return render_template('create_product.html', errors=[])
+
+def contactView():
+    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    if user == []: return redirect(url_for('logout'))
+
+    if request.method == 'POST':
+        pass # Send email
+
+    return render_template('contact_us.html')
