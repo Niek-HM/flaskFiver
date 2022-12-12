@@ -149,7 +149,7 @@ def productView(id):
     if user == []: return redirect(url_for('logout'))
 
     try:
-        if id.isnumeric(): product = database.read('products', 'img, description, title, body, price', f'WHERE id="{id}"')[0]
+        if id.isnumeric(): product = database.read('products', 'description, title, body, price', f'WHERE id="{id}"')[0] #! Allow multiple images
         else: pass # Search by name or somthing??
         return render_template('product_view.html', product=product)
     except: return render_template('notFound.html')

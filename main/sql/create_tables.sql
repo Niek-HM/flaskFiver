@@ -30,11 +30,16 @@ CREATE TABLE IF NOT EXISTS user( -- The main user account
 CREATE TABLE IF NOT EXISTS products( -- Products sold on the website
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     creator INTEGER FOREIGNKEY REFERENCES user(id),
-    img varchar(64),
     description varchar(64),
     title varchar(28),
     body varchar(1024),
     price INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS productimg(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    img varchar(64),
+    order TINYINT
 );
 
 CREATE TABLE IF NOT EXISTS orders( -- People who bought a product
