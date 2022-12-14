@@ -38,8 +38,9 @@ CREATE TABLE IF NOT EXISTS products( -- Products sold on the website
 
 CREATE TABLE IF NOT EXISTS productimg(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product INTEGER FOREIGNKEY REFERENCES products(id),
     img varchar(64),
-    order TINYINT
+    pos TINYINT
 );
 
 CREATE TABLE IF NOT EXISTS orders( -- People who bought a product

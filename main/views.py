@@ -9,19 +9,21 @@ from werkzeug.utils import secure_filename
 
 import random, os
 
+#* Open the database and initialize the user class
 database = ReadWrite()
 userhandle = User(database)
 
 dir_ = os.path.dirname(os.path.realpath(__file__))
 
+# All the def's are connected to the url rules in app.py
 def homeView():
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
-    if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
+    user = userhandle.isLoggedIn(session) # Check if the user is logged in
+    if user == []: return redirect(url_for('logout')) # Redirect to the logout page so the user can correctly log in
 
     if request.method == 'POST': #! Atm all post requests will be for vendor stuff
         try: 
-            email = user[3] # Send an email with username etc
-            code = str(random.randint(100000, 999999))
+            email = user[3]
+            code = str(random.randint(100000, 999999)) # Generate a random code
             sendPersonal(email, 'Varification Code', code)
             session['code'] = encrypt(code)
             return redirect(url_for('verify'))
@@ -149,9 +151,12 @@ def productView(id):
     if user == []: return redirect(url_for('logout'))
 
     try:
-        if id.isnumeric(): product = database.read('products', 'description, title, body, price', f'WHERE id="{id}"')[0] #! Allow multiple images
-        else: pass # Search by name or somthing??
-        return render_template('product_view.html', product=product)
+        product, images = [], []
+        if id.isnumeric(): product = database.read('products', 'id, description, title, body, price', f'WHERE id="{id}"')[0] #! Allow multiple images
+        else: pass #* Search by name or somthing??
+
+        if product !=[]: images = database.read('productimg', 'product, img, pos', f'WHERE product IN {product}')
+        return render_template('product_view.html', product=product, images=images)
     except: return render_template('notFound.html')
 
 def buyView(id): #! One of the last things to do, don't forget haha

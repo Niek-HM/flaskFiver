@@ -1,7 +1,7 @@
 import sqlite3, pathlib
 import atexit
 
-class Create:
+class Create: #* Create the database
     def __init__(self):
         self.fileLoc = pathlib.Path(__file__).parent.resolve()
 
@@ -16,7 +16,7 @@ class Create:
         self.cursor.executescript(sqlData) # Execute a script
         self.connection.commit() # Save the database
 
-class ReadWrite:
+class ReadWrite: #* Read or write to the database
     def __init__(self):
         self.fileLoc = pathlib.Path(__file__).parent.resolve()
 
@@ -29,13 +29,13 @@ class ReadWrite:
         self.cursor.execute(f'SELECT {rows} FROM {tables} {specification}')
         rows = self.cursor.fetchall()
 
-        return rows #! Returns every row even if you should not be able to see it
+        return rows
 
-    def customRead(self, command):
+    def customRead(self, command): #! Never use this if it is not needed
         self.cursor.execute(command)
         rows = self.cursor.fetchall()
 
-        return rows #! Returns every field
+        return rows #! Make sure you pop the values you don't need
 
     def write(self, table, columns, values, specification=''):
         input_ = '?'

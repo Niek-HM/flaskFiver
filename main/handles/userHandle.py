@@ -7,19 +7,21 @@ allowed_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!
 class User:
     def __init__(self, database): self.database = database
 
-    def isLoggedIn(self, session):
+    def isLoggedIn(self, session): #* Check if the user is logged in
         if 'token' not in session or 'id' not in session: return []
         
+        ##* GET SESSION DATA AND CHECK IF IT IS VALID *##
         token, id = session['token'], session['id']
         try: 
-            user = self.database.read(tables='user', rows='id, token, isAdmin, email', specification=f'WHERE id="{id}"')[0] # Get the user with the same id
+            user = self.database.read(tables='user', rows='id, token, isAdmin, email', specification=f'WHERE id="{id}"')[0]
         except IndexError: return []
         
-        if not checkHash(user[1], token): return [] # Check if the token is valid #!Not sure if the [0] is needed
+        if not checkHash(user[1], token): return []
 
         return user
     
-    def userLogin(self, request=None): # Get the login form data and check if its valid
+    def userLogin(self, request=None): #* allow for users to log in
+        ##* CHECK IF ALL DATA IS PRESENT *##
         if request == None: return ['No request data found.?'], None, None
         errors = []
 
@@ -31,13 +33,15 @@ class User:
 
         if errors != []: return errors, None, None
 
-        user = self.database.read(tables='user', rows='id, name, passwordHash, token', specification=f'WHERE name="{username}"') # Always returns a list in the format: [id, name, passwordHash, token]
+        ##* CHECK IF THE USER EXISTS *##
+        user = self.database.read(tables='user', rows='id, name, passwordHash, token', specification=f'WHERE name="{username}"')
         
-        if user != [] and checkHash(password, user[0][2]): return [], user[0][0], encrypt(user[0][3]) # The token get encrypted so no one can steal it later # errors, user, id, token *We incrypt the token to prevent ppl from stealing it out of your browser..
+        if user != [] and checkHash(password, user[0][2]): return [], user[0][0], encrypt(user[0][3])
 
         return ['Username or password is wrong.'], None, None
     
-    def createUser(self, request=None):
+    def createUser(self, request=None): #* Allow users to register
+        ##* CHECK IF ALL DATA IS PRESENT *##
         if request == None: return ['No request data found.?'], None, None
         errors = []
 
@@ -53,10 +57,11 @@ class User:
         elif password.__len__() < 5: errors.append('Password needs at least 5 characters.')
         if email == '': errors.append('Email field can not be empty.')
 
+        ##* CHECK IF ALL THE DATA IS VALID *##
         if conf_password != password: errors.append('Password and Confirm Password are not the same')
 
         for i in (password+username+first_name+last_name+email+conf_password):
-            if i not in allowed_chars: #* Only checks if every character is in a specific list of chars
+            if i not in allowed_chars:
                 errors.append(f'Invalid character(s) found.')
                 break
         
@@ -70,8 +75,9 @@ class User:
         
         user = self.database.read(tables='user', rows='name', specification=f'WHERE name="{username}"')
         
-        if user.__len__() != 0: return ['Username is already taken.'] #! Checks if no users are returned (This can only happen if the username is taken)
-
+        if user.__len__() != 0: return ['Username is already taken.']
+        
+        ##* SAVE THE ACCOUNT *##
         success = self.database.write('user', 'name, passwordHash, token, first_name, last_name, email, pfp', [username, encrypt(password), str(uuid4()), first_name, last_name, email, '']) # Maybe allow pfp to be chosen here?
 
         if success: return [] # This should be True if the user was successfully saved

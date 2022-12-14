@@ -6,24 +6,21 @@ import bcrypt
 from handles.databaseHandle import Create, ReadWrite
 Create() # Make sure all databases exist
 
-from waitress import serve
+from waitress import serve # I use this instead of flask is because waitress automatically hosts it locally
 
 class MainApp:
-    def __init__(self):
+    def __init__(self): #* Initialize the app and define all data
         self.app = Flask(__name__)
-        self.app.secret_key = bcrypt.gensalt() # Generates a different salt every time the server is run
+        self.app.secret_key = bcrypt.gensalt() # Generates a different salt every time the server is run so cookies won't always work properly
 
-        self.get_possible_urls()
+        self.get_possible_urls() #* Add the url rules
 
-        serve(self.app, host='0.0.0.0', port=5000, threads=4) # Default threads=4 but it 
+        serve(self.app, host='0.0.0.0', port=5000, threads=4) # Host the application
     
-    def get_possible_urls(self):
+    def get_possible_urls(self): #* Add url rules (The all the sub places you can go to)
         self.app.add_url_rule('/', 'home', homeView, methods=['GET', 'POST'])
         self.app.add_url_rule('/admin/', 'admin', adminView, methods=['GET', 'POST'])
         self.app.add_url_rule('/admin/<specific>/', 'adminView', adminSpecificView, methods=['GET', 'POST'])
-        
-        # For searching: self.app.add_url_rule('/search?q=<search>/', 'search', searchView, methods=['GET', 'POST'])
-        # For searching: self.app.add_url_rule('/users?q=<search>/', 'searchusers', searchUsersView, methods=['GET', 'POST'])
             
         self.app.add_url_rule('/login/', 'login', loginView, methods=['GET', 'POST'])
         self.app.add_url_rule('/logout/', 'logout', logoutView, methods=['GET', 'POST'])
@@ -39,17 +36,6 @@ class MainApp:
         self.app.add_url_rule('/create_product/', 'create-product', createProductView, methods=['GET', 'POST'])
         
         self.app.add_url_rule('/contact_us/', 'contact', contactView, methods=['GET', 'POST'])
-
-
-        """ 
-        * This are some pages i want to add, look in TODO to find named html files (with no content though)
-        
-        * Change password should be added
-        * More pages for the users account
-        * More pages to view reports you gave
-        * Some admin pages to manage reports, ban people, etc
-        ! Think of more items that are needed later
-        """
 
 if __name__ == '__main__':
     MainApp()#.app.run('0.0.0.0', 5000, debug=False) # options=....
