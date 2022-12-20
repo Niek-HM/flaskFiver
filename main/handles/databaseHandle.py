@@ -6,7 +6,7 @@ class Create: #* Create the database
         self.fileLoc = pathlib.Path(__file__).parent.resolve()
 
         self.connection = sqlite3.connect(f'{self.fileLoc}/../database/main.db') # Connect to the database
-        self.cursor = self.connection.cursor() # Can run commands like a cmd
+        self.cursor = self.connection.cursor() # Runs the commands like the cmd/terminal
 
         self.database_exists()
         self.connection.close() # Close connection
@@ -20,12 +20,12 @@ class ReadWrite: #* Read or write to the database
     def __init__(self):
         self.fileLoc = pathlib.Path(__file__).parent.resolve()
 
-        self.connection = sqlite3.connect(f'{self.fileLoc}/../database/main.db', check_same_thread=False)
-        self.cursor = self.connection.cursor()
+        self.connection = sqlite3.connect(f'{self.fileLoc}/../database/main.db', check_same_thread=False) # Connect to the database
+        self.cursor = self.connection.cursor() # Runs the commands like the cmd/terminal
 
-        atexit.register(self.exit_handler)
+        atexit.register(self.exit_handler) #* Makes sure that the database is correctly closed
 
-    def read(self, tables, rows, specification=''):
+    def read(self, tables, rows, specification=''): #* Read from database
         self.cursor.execute(f'SELECT {rows} FROM {tables} {specification}')
         rows = self.cursor.fetchall()
 
@@ -37,7 +37,7 @@ class ReadWrite: #* Read or write to the database
 
         return rows #! Make sure you pop the values you don't need
 
-    def write(self, table, columns, values, specification=''):
+    def write(self, table, columns, values, specification=''): #* Write to database
         input_ = '?'
 
         for i in range(values.__len__()-1): input_ += ', ?'
@@ -48,7 +48,7 @@ class ReadWrite: #* Read or write to the database
             return True
         else: return False # Returns if commit was not successfull
 
-    def changeData(self, table, columns, values, specification=''):
+    def changeData(self, table: str, columns: list, values: list, specification=''): #* Change data in the database
         for i in range(columns.__len__()):
             self.cursor.execute(f'UPDATE {table} SET {str(columns[i-1])}="{str(values[i-1])}" {specification};')
         
@@ -58,4 +58,4 @@ class ReadWrite: #* Read or write to the database
         else: return False
 
     def exit_handler(self):
-        self.connection.close()
+        self.connection.close() #* Close the connection

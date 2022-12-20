@@ -9,61 +9,66 @@ from werkzeug.utils import secure_filename
 
 import random, os
 
-#* Open the database and initialize the user class
+# NOTE Initialize the database
 database = ReadWrite()
 userhandle = User(database)
 
-dir_ = os.path.dirname(os.path.realpath(__file__))
+dir_ = os.path.dirname(os.path.realpath(__file__)) # NOTE The path from the driver to this files current folder
 
-# All the def's are connected to the url rules in app.py
+# NOTE All the defenitions are linked through the app.py (the urls point here)
 def homeView():
-    user = userhandle.isLoggedIn(session) # Check if the user is logged in
-    if user == []: return redirect(url_for('logout')) # Redirect to the logout page so the user can correctly log in
+    user = userhandle.isLoggedIn(session) # NOTE Check if the user is logged in
+    if user == []: return redirect(url_for('logout')) # NOTE Return to login page and remove session data if login check failed
 
-    if request.method == 'POST': #! Atm all post requests will be for vendor stuff
-        try: 
-            email = user[3]
-            code = str(random.randint(100000, 999999)) # Generate a random code
-            sendPersonal(email, 'Varification Code', code)
-            session['code'] = encrypt(code)
-            return redirect(url_for('verify'))
-
-        except Exception: worked = False #! Return something for the popup json to receive
-    else: worked = None
-    return render_template('home.html', worked=worked) # The user is logged in so we show the page
+    return render_template('home.html') # NOTE Return the correct html when everything checks out
 
 def verifyView():
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
-    if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
+    user = userhandle.isLoggedIn(session)
+    if user == []: return redirect(url_for('logout'))
 
-    if request.method == 'POST':
-        code = request.values.get('code')
-        if checkHash(code, session['code']): 
-            print('Corect code was given') #! Set vendor value to true
+    errors = [] # NOTE If any errors occur we will append it to this list
 
-    return render_template('verify.html')
+    if request.method == 'GET': # NOTE on a 'GET' request (The first time you load the page) this is called
+        try: # NOTE Catch any exeptions so we know everything worked
+            email = user[3]
+            code = str(random.randint(100000, 999999)) # NOTE Generate a random code with a length of 6
+            session['verify:code'] = encrypt(code) # NOTE encrypt the code and store it in the session
+            sendPersonal(email, 'Varification Code', code) # NOTE send email with the code
+            errors.append('A new code has been sent to you through email') # NOTE Show it was successfull through the error messages
+
+        except Exception as e: # NOTE Catch any errors and append a message for the user
+            print(e)
+            errors.append('Something went wrong while creating the verification code, please reload the page to try again.') #! Return something for the popup json to receive
+
+    if request.method == 'POST': # NOTE This runs when a form has been submitted
+        code = request.values.get('code') # NOTE Get the 'code' input field from the form
+
+        if checkHash(code, session['verify:code']): database.changeData('user', ['isSeller'], ['1']) # NOTE Check if the given code is correct and change the seller data in the database
+        else: errors.append('The code did not match the one we provided through email.')
+
+    return render_template('verify.html', errors=errors)
 
 
 def adminView():
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
-    if user[2] == 0: return redirect(url_for('home'))
+    if user[2] == 0: return redirect(url_for('home')) # NOTE Return the user to the home page if he is not an admin
 
-    all_table_names = database.customRead("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+    # FIXME This can be a normal read instead of custom read, after this is changed the whole function can be removed
+    all_table_names = database.customRead("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'") # NOTE get all the table names we have created
     
-    for i in range(all_table_names.__len__()):
+    for i in range(all_table_names.__len__()): #
         length = database.read(f"{all_table_names[i][0]}", '*')
         all_table_names[i] += (length.__len__(),)
 
-    return render_template('admin.html', tables=all_table_names)
+    return render_template('admin.html', tables=all_table_names) # NOTE The tables=all_table_names makes sure we can get this data in the html
 
 def adminSpecificView(specific):
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
-    
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
     if user[2] == 0: return redirect(url_for('home'))
 
-    data = database.read(f'{specific}', '*')
+    data = database.read(f'{specific}', '*') # NOTE get all the data from the selected database
     
     return render_template('adminView.html', data=data, table=specific)
 
@@ -71,115 +76,118 @@ def adminSpecificView(specific):
 
 
 def loginView():
-    if 'id' in session and 'token' in session: return redirect(url_for('home')) # Go to the home page if the user is logged in
+    if 'id' in session and 'token' in session: return redirect(url_for('home')) # NOTE Go to the home page if the user is logged in
 
-    if request.method == 'POST': # The user has submitted the form
-        errors, id, tokenSession = userhandle.userLogin(request)
+    if request.method == 'POST':
+        errors, id, tokenSession = userhandle.userLogin(request) # NOTE log the user in if everything is valid
 
-        if errors != []: return render_template('login.html', errors=errors) # An error was found in the form
+        if errors != []: return render_template('login.html', errors=errors) # NOTE In this case i don't want to proceed if any errors are found
 
-        session['id'] = id # saves the id in the session data
-        session['token'] = tokenSession # Saves the token in the session data
+        session['id'] = id # NOTE saves the id in the session data
+        session['token'] = tokenSession # NOTE Saves the token in the session data
 
         return redirect(url_for('home'))
 
     return render_template('login.html', errors=[])
 
 def logoutView():
-    session.pop('token', None) # Clear token from the session data
-    session.pop('id', None) # Clear the user dict from the session
+    session.pop('token', None) # NOTE Clear token from the session data
+    session.pop('id', None) # NOTE Clear the user dict from the session
 
 
     return redirect(url_for('login')) # Redirect to the login page
 
 def registerView():
-    if 'id' in session and 'token' in session: return redirect(url_for('home')) # Go to the home page if the user is logged in
+    if 'id' in session and 'token' in session: return redirect(url_for('home'))
 
     if request.method == 'POST':
-        errors = userhandle.createUser(request)
+        errors = userhandle.createUser(request) # NOTE Create a new user
         if errors != []: return render_template('register.html', errors=errors)
 
         return redirect(url_for('login'))
     
     return render_template('register.html', errors=[])
 
-
-#! All below don't have any html in them
-'''
-    if 'token' not in session or 'id' not in session: return redirect(url_for('logout')) # Go to the login screen if there is no token or user found
-    user = userhandle.isLoggedIn(session['token'], session['id']) # Check if the session data is valid
-    if user == []: return redirect(url_for('logout')) # No user object was returned so we clear the session data and go to login
-
-'''
-
+#! Not finished
 def accountView(userToView):
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
     if request.method == 'POST': 
-        pass #! Make changes to their account
+        pass # TODO Make changes to your account
         # username = ...
         # pfp = ...
         # etc....
     
-    if not userToView.isnumeric(): 
+    if not userToView.isnumeric(): # NOTE Check if the input we gave is a name
         try: 
             userToView = list(database.read('user', 'id, name, pfp, first_name, last_name, email, phone, rating, website, github, insta, facebook, twitter, isSeller, privacy, isMod, isAdmin', f'WHERE name="{userToView}"')[0])
-            if userToView[7] == 1: 
-                del userToView[3:5] # Deletes the 4- and 5th item form the list
-                del userToView[8]
+            if userToView[7] == 1: # NOTE Check if the user has set their account to private
+                del userToView[3:6] # NOTE Deletes the last name, email and phone from the vieuwable list
+                #del userToView[8] # FIXME Check if correct data is removed
         except IndexError: userToView = []
 
-    else: 
-        try: userToView = list(database.read('user', 'id, name, pfp, first_name, last_name, email, phone, rating, website, github, insta, facebook, twitter, isSeller, privacy, isMod, isAdmin', f'WHERE id="{userToView}"')[0])
+    else: # NOTE Otherwise the id is given
+        try: 
+            userToView = list(database.read('user', 'id, name, pfp, first_name, last_name, email, phone, rating, website, github, insta, facebook, twitter, isSeller, privacy, isMod, isAdmin', f'WHERE id="{userToView}"')[0])
+            if userToView[7] == 1: del userToView[3:6]
         except IndexError: userToView = []
 
     products = []
     same = '0'
-    if userToView != []:
+    if userToView != []: # NOTE If the user exists we will get all the products they have and find their profile picture
         userToView[2] = userToView[2] if userToView[2] != None else 'default.png'
         products = database.read('products', 'creator, img, description, title, body, price', f'WHERE creator="{userToView[0]}"') # Still need to get a rating
         same = '1' if userToView[0] == user[0] else '0'
 
     if userToView != []: return render_template('account.html', user=userToView, same=same, products=products)
-    else: return render_template('notFound.html')
-
-##! Most stuff below still needs to check for POST or GET and do some more specific stuff, i just did the basic database reads that where needed
+    else: return render_template('notFound.html') # NOTE If no users where found we will return a custom page
 
 def productView(id): 
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
-    try:
-        product, images = [], []
-        if id.isnumeric(): product = database.read('products', 'id, description, title, body, price', f'WHERE id="{id}"')[0] #! Allow multiple images
-        else: pass #* Search by name or somthing??
+    product, images, comments, ratings = [], [], [], []
+    
+    if id.isnumeric(): 
+        try: 
+            product = database.read('products', 'id, description, title, body, price, creator', f'WHERE id="{id}"')[0]
+            
+            images = database.read('productimg', 'img, pos', f'WHERE product IN {product}').sort(key=lambda i: i[1]) # NOTE Get all the images from the database and sort them by the pos value
+            comments = database.read('comments', 'commenter, stars, comment, creation', f'WHERE for="{product[0]}"').sort(key=lambda i: i[3], reverse=True)
+            ratings = database.read('ratings', 'rating', f'where for="{product[5]}"')
+        except IndexError as e: 
+            print(e)
+            return render_template('notFound.html')
 
-        if product !=[]: images = database.read('productimg', 'product, img, pos', f'WHERE product IN {product}')
-        return render_template('product_view.html', product=product, images=images)
-    except: return render_template('notFound.html')
+        
+    rating = 0
+    for i in ratings: rating += int(i[0])
+    rating = rating/ratings.__len__() # NOTE Make an avarage from all the received ratings
 
-def buyView(id): #! One of the last things to do, don't forget haha
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    return render_template('product_view.html', product=product, images=images, comments=comments, rating=rating)
+
+def buyView(id): # BUG I still need to make ppl able to actually buy items
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
     return render_template('but_product.html', product=id)
 
 def searchView(search): 
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
     if search == '*': search = ''
     search = search.split('_')
     cmd = ''
     for i in search: cmd += f'title LIKE "%{i}%" OR '
-    cmd = cmd[:-4] #* Remove the last or and spaces
+    cmd = cmd[:-4] # NOTE Removes the last or
 
     products = database.read('products', 'id, title, body, price', f'WHERE {cmd}') #! Not tested if this works
     return render_template('searching.html', products=products, search=search)
 
-def userlookupView(user): #* This is the most basic version i can make
-    user_ = userhandle.isLoggedIn(session) # Check if the session data is valid
+def userlookupView(user):
+    user_ = userhandle.isLoggedIn(session)
     if user_ == []: return redirect(url_for('logout'))
 
     if user == '*': user = ''
@@ -187,39 +195,42 @@ def userlookupView(user): #* This is the most basic version i can make
     return render_template('user_lookup.html', users=users, search=user)
 
 def reportView(id):
-    user = userhandle.isLoggedIn(session)  # Check if the session data is valid
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
     if request.method == 'POST':
-        reported = request.values.get('user_').split(' - ')[0] #* Get the id
-        types = request.values.get('types')
-        info = request.values.get('descr')
-        #! Improve the styling later
+        reported = request.values.get('user_').split(' - ')[0] # NOTE Get the id
+        types = request.values.get('types') # NOTE Get the type of offence
+        info = request.values.get('descr') # NOTE Get the description of the offence
+
         sendMass(receivers=['niekmeijlink@gmail.com', user[3]], head=f'Report from {user[3]}', body=f'<h1><b>Report submitted</b></h1><p> - {types}</p>\n\n<p>{info}</p>', file='')
 
         saved = database.write('reports', 'reported, reporter, types, info', [reported, user[0], types, info])
         if saved: return redirect(url_for('home'))
     
-    if id.isnumeric():
+    if id.isnumeric(): # FIXME This only works for id's atm, later also allow for usernames
         user_ = database.read('user', 'id, name', f'WHERE id="{id}"')[0]
         users = database.read('user', 'id, name', f'WHERE NOT id="{id}"')
         return render_template('report.html', user=user_, users=users)
     
-    else: return redirect(url_for('home')) #* Do something else
+    else: return redirect(url_for('home'))
 
 def createProductView():
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
     if request.method == 'POST':
         errors = []
         title = request.values.get('title')
         
-        f = request.files['file']
+        f = request.files['file'] #* Allow people to upload files
         if f != '':
-            path = f'{dir_}/static/products/{user[0]}_{title}.{secure_filename(f.filename).split(".")[-1]}'
+            path_ = f'{dir_}/static/img/products/{user[0]}/'
+            if not os.path.exists(path_): os.makedirs(path_)
 
-            if os.path.exists(path): errors.append('You already have a product with this name')
+            path = f'{path_}{user[0]}_{title}.{secure_filename(f.filename).split(".")[-1]}'
+
+            if os.path.exists(path): errors.append('You already have a product with this title.')
             else: f.save((path)) #*id+product_name+type
         else: path = 'DEFAULT'
 
@@ -231,19 +242,20 @@ def createProductView():
 
         if errors: return render_template('create_product.html', errors=errors)
 
-        path = path.split('/')[-1] # Only save the filename
+        path = path.split('/')[-1] # NOTE Only save the filename
         saved = database.write('products', 'img, description, title, body, price, creator', [path, short_descr, title, body, price, user[0]])
         
-        if saved: return redirect(url_for('home')) #! Should reroute to the product itself
+        if saved: return redirect(url_for('home')) # BUG Should go to the product instead of home
         else: return render_template('create_product.html', errors=['There was an error when saving to the database.'])
 
     return render_template('create_product.html', errors=[])
 
+#! Not finished
 def contactView():
-    user = userhandle.isLoggedIn(session) # Check if the session data is valid
+    user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
     if request.method == 'POST':
-        pass # Send email
+        pass # FIXME Send an email
 
     return render_template('contact_us.html')

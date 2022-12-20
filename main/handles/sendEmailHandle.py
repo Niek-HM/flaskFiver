@@ -6,9 +6,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 sender = 'noresponse.informatica@gmail.com'
-password = 'Informatica1!'
+password = 'asqtmaggxdwmpitn'
 
-def sendPersonal(receiver: str, head: str, body: str, file: str): #* Send an email to one singel person
+def sendPersonal(receiver: str, head: str, body: str, file: str=''): #* Send an email to one singel person
     ##* CREATE THE MESSAGE *##
     message = MIMEMultipart()
     message['From'] = sender
@@ -27,7 +27,7 @@ def sendPersonal(receiver: str, head: str, body: str, file: str): #* Send an ema
         server.login(sender, password)
         server.sendmail(sender, receiver, text)
 
-def sendMass(receivers: list, head: str, body: str, file: str):
+def sendMass(receivers: list, head: str, body: str, file: str=''):
     ##* CREATE THE MESSAGE *##
     message = MIMEMultipart()
     message['From'] = sender

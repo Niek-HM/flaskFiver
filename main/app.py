@@ -11,6 +11,7 @@ from waitress import serve # I use this instead of flask is because waitress aut
 class MainApp:
     def __init__(self): #* Initialize the app and define all data
         self.app = Flask(__name__)
+        self.app.debug = True #! Delete when finished
         self.app.secret_key = bcrypt.gensalt() # Generates a different salt every time the server is run so cookies won't always work properly
 
         self.get_possible_urls() #* Add the url rules
