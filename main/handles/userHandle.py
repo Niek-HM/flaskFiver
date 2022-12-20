@@ -1,13 +1,14 @@
 from handles.incryptionHandle import encrypt, checkHash
 
-from uuid import uuid4  # For generating a new token
+from uuid import uuid4  # NOTE Generates a uuid for every new user
 
+# NOTE Set a list of characters we allow for username, password etc
 allowed_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()*+,-./:;<=>?@[]^_{|}~'
 
 class User:
     def __init__(self, database): self.database = database
 
-    def isLoggedIn(self, session): #* Check if the user is logged in
+    def isLoggedIn(self, session): # NOTE Check if the user is logged in
         if 'token' not in session or 'id' not in session: return []
         
         ##* GET SESSION DATA AND CHECK IF IT IS VALID *##
@@ -20,7 +21,7 @@ class User:
 
         return user
     
-    def userLogin(self, request=None): #* allow for users to log in
+    def userLogin(self, request=None): # NOTE allow for users to log in
         ##* CHECK IF ALL DATA IS PRESENT *##
         if request == None: return ['No request data found.?'], None, None
         errors = []
@@ -40,7 +41,7 @@ class User:
 
         return ['Username or password is wrong.'], None, None
     
-    def createUser(self, request=None): #* Allow users to register
+    def createUser(self, request=None): # NOTE Allow users to register
         ##* CHECK IF ALL DATA IS PRESENT *##
         if request == None: return ['No request data found.?'], None, None
         errors = []
@@ -80,5 +81,5 @@ class User:
         ##* SAVE THE ACCOUNT *##
         success = self.database.write('user', 'name, passwordHash, token, first_name, last_name, email, pfp', [username, encrypt(password), str(uuid4()), first_name, last_name, email, '']) # Maybe allow pfp to be chosen here?
 
-        if success: return [] # This should be True if the user was successfully saved
-        return ['An error occured when saving to the database.']
+        if success: return []
+        return ['An error occured when saving to the database.'] # NOTE Returns an error if it was not saved correctly

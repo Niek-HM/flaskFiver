@@ -5,17 +5,18 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+# HACK Save this in the .env
 sender = 'noresponse.informatica@gmail.com'
 password = 'asqtmaggxdwmpitn'
 
-def sendPersonal(receiver: str, head: str, body: str, file: str=''): #* Send an email to one singel person
+def sendPersonal(receiver: str, head: str, body: str, file: str=''): # NOTE Send an email to one singel person
     ##* CREATE THE MESSAGE *##
     message = MIMEMultipart()
     message['From'] = sender
     message['To'] = receiver
     message['Subject'] = head
 
-    #! Maybe add file support?
+    # TODO Add file support
 
     message.attach(MIMEText(body, "html"))
 
@@ -34,7 +35,7 @@ def sendMass(receivers: list, head: str, body: str, file: str=''):
     message['Bcc'] = ", ".join(receivers)
     message['Subject'] = head
 
-    #! Maybe add file support?
+    # TODO Add file support
 
     message.attach(MIMEText(body, "html"))
     text = message.as_string()

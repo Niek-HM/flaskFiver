@@ -4,22 +4,22 @@ from views import *
 import bcrypt 
 
 from handles.databaseHandle import Create, ReadWrite
-Create() # Make sure all databases exist
+Create() # NOTE Initialize the database
 
-from waitress import serve # I use this instead of flask is because waitress automatically hosts it locally
+from waitress import serve # NOTE Serve it on a local network
 
 class MainApp:
     def __init__(self): #* Initialize the app and define all data
         self.app = Flask(__name__)
-        self.app.debug = True #! Delete when finished
-        self.app.secret_key = bcrypt.gensalt() # Generates a different salt every time the server is run so cookies won't always work properly
+        self.app.debug = True # HACK Delete this before handing in the project/putting it on a server
+        self.app.secret_key = bcrypt.gensalt() # NOTE Generates a different salt every time the server is run so cookies won't always work properly
 
-        self.get_possible_urls() #* Add the url rules
+        self.get_possible_urls() # NOTE Add the url rules
 
-        serve(self.app, host='0.0.0.0', port=5000, threads=4) # Host the application
+        serve(self.app, host='0.0.0.0', port=5000, threads=4) # NOTE Host the application
     
-    def get_possible_urls(self): #* Add url rules (The all the sub places you can go to)
-        self.app.add_url_rule('/', 'home', homeView, methods=['GET', 'POST'])
+    def get_possible_urls(self): # NOTE Add url rules (The all the sub places you can go to)
+        self.app.add_url_rule('/', 'home', homeView, methods=['GET', 'POST']) # NOTE Add a url role to a sub link with a view and methods
         self.app.add_url_rule('/admin/', 'admin', adminView, methods=['GET', 'POST'])
         self.app.add_url_rule('/admin/<specific>/', 'adminView', adminSpecificView, methods=['GET', 'POST'])
             
@@ -40,4 +40,4 @@ class MainApp:
 
 if __name__ == '__main__':
     MainApp()#.app.run('0.0.0.0', 5000, debug=False) # options=....
-    #* Atm waitress.serve() runs the server on the local wifi, anyone can access by typing in your ip...
+    # NOTE Atm waitress.serve() runs the server on the local wifi, anyone can access by typing in your ip...
