@@ -183,7 +183,7 @@ def searchView(search):
     for i in search: cmd += f'title LIKE "%{i}%" OR '
     cmd = cmd[:-4] # NOTE Removes the last or
 
-    products = database.read('products', 'id, title, body, price', f'WHERE {cmd}') #! Not tested if this works
+    products = database.read('products', 'id, title, body, price', f'WHERE {cmd}')
     return render_template('searching.html', products=products, search=search)
 
 def userlookupView(user):
@@ -223,7 +223,7 @@ def createProductView():
         errors = []
         title = request.values.get('title')
         
-        f = request.files['file'] #* Allow people to upload files
+        f = request.files['file'] # NOTE Get file from form and save it
         if f != '':
             path_ = f'{dir_}/static/img/products/{user[0]}/'
             if not os.path.exists(path_): os.makedirs(path_)
@@ -231,7 +231,7 @@ def createProductView():
             path = f'{path_}{user[0]}_{title}.{secure_filename(f.filename).split(".")[-1]}'
 
             if os.path.exists(path): errors.append('You already have a product with this title.')
-            else: f.save((path)) #*id+product_name+type
+            else: f.save((path)) # NOTE file name = userID_productname
         else: path = 'DEFAULT'
 
         short_descr = request.values.get('short-descr')
