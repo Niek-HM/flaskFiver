@@ -2,24 +2,29 @@ import email, smtplib, ssl
 
 from email import encoders
 from email.mime.base import MIMEBase
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from os.path import basename
 
 # HACK Save this in the .env
 sender = 'noresponse.informatica@gmail.com'
 password = 'asqtmaggxdwmpitn'
 
-def sendPersonal(receiver: str, head: str, body: str, file: str=''): # NOTE Send an email to one singel person
+# TODO Check if the file support works
+def sendPersonal(receiver: str, head: str, body: str, file: list=[]): # NOTE Send an email to one singel person
     ##* CREATE THE MESSAGE *##
     message = MIMEMultipart()
     message['From'] = sender
     message['To'] = receiver
     message['Subject'] = head
 
-    # TODO Add file support
-
+    for f_ in file:
+        with open(f_, 'rb') as f: part = MIMEApplication(f.read(), Name=basename(f))
+        part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
+        message.attach(part)
+    
     message.attach(MIMEText(body, "html"))
-
     text = message.as_string()
 
     ##* SEND THE MESSAGE *##
@@ -35,7 +40,10 @@ def sendMass(receivers: list, head: str, body: str, file: str=''):
     message['Bcc'] = ", ".join(receivers)
     message['Subject'] = head
 
-    # TODO Add file support
+    for f_ in file:
+        with open(f_, 'rb') as f: part = MIMEApplication(f.read(), Name=basename(f))
+        part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
+        message.attach(part)
 
     message.attach(MIMEText(body, "html"))
     text = message.as_string()

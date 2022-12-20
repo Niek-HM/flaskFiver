@@ -29,10 +29,7 @@ def createUser():
     )
 
 while True:
-    TODO = input(">> ")
+    inputs = input(">> ")
 
-    if TODO == 'q':
-        break
-
-    if TODO == 'c':
-        createUser()
+    if inputs == 'q': break
+    elif inputs == 'c': createUser()
