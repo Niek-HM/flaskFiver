@@ -31,12 +31,6 @@ class ReadWrite: # NOTE Make it possible to read/write from the database
 
         return rows
 
-    def customRead(self, command): # HACK Remove after the other command is removed
-        self.cursor.execute(command)
-        rows = self.cursor.fetchall()
-
-        return rows # HACK While it is still used make sure everything that is not needed is poped
-
     def write(self, table, columns, values, specification=''): # NOTE Write to database
         input_ = '?'
 

@@ -54,8 +54,7 @@ def adminView():
     if user == []: return redirect(url_for('logout'))
     if user[2] == 0: return redirect(url_for('home')) # NOTE Return the user to the home page if he is not an admin
 
-    # FIXME This can be a normal read instead of custom read, after this is changed the whole function can be removed
-    all_table_names = database.customRead("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'") # NOTE get all the table names we have created
+    all_table_names = database.read('sqlite_master', 'name', f"WHERE type='table' AND name NOT LIKE 'sqlite_%'")
     
     for i in range(all_table_names.__len__()): #
         length = database.read(f"{all_table_names[i][0]}", '*')
@@ -180,6 +179,7 @@ def searchView(search):
     if search == '*': search = ''
     search = search.split('_')
     cmd = ''
+    
     for i in search: cmd += f'title LIKE "%{i}%" OR '
     cmd = cmd[:-4] # NOTE Removes the last or
 
@@ -255,7 +255,14 @@ def contactView():
     user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
-    if request.method == 'POST':
-        pass # FIXME Send an email
+    errors = []
 
-    return render_template('contact_us.html')
+    if request.method == 'POST': # FIXME It works, just make the html body a bit larger
+        title = request.values.get('title')
+        body = request.values.get('body')
+        if title == '' or body == '': errors.append('Make sure all fields are filled in before trying to send anything.') 
+        else: 
+            sendMass([user[3], 'niekmeijlink@gmail.com'], title, body)
+            errors.append('Email was sent successfully, please check your email for confirmation')
+
+    return render_template('contact_us.html', errors=errors)

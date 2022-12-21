@@ -22,3 +22,10 @@ But for everyone who wants to make their own versions:
 5. dotenv
 
 This should be everything since the rest of the dependencies are automatically installed with python. If anything is missing, please open a issue.
+
+## What did i learn
+For this project i used flask for the first time together with SQL. With this i first experienced a couple of problems since i have not used them together yet. Also was it new for me to code a website at sutch a low level giving me mutch more freedom with a trade of in the dificulty. 
+
+some more stuff i learned about sql
+some more stuff i learned about flask
+etc
