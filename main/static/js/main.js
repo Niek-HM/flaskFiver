@@ -4,9 +4,19 @@ function selectFile() { // NOTE click the file input when the button is pressed
 
 $(document).ready(function() { // NOTE Change classes when a file is selected
     $(document.getElementById('file')).change(function(e) {
-        document.getElementById('fileInputName').textContent = document.getElementById('file').files[0].name;
-        document.getElementById('fileButton').classList.remove('btn-secondary');
-        document.getElementById('fileButton').classList.add('btn-primary');
+        input = document.getElementById('fileInputName');
+        input.textContent = document.getElementById('file').files[0].name;
+        
+        button = document.getElementById('fileButton');
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-primary');
+        
+        button.style.removeProperty('display');
+
+        const [file] = document.getElementById('file').files;
+        if (file) {
+            document.getElementById('fileImg').src = URL.createObjectURL(file);
+        }
     });
 });
 

@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS reports( -- Reporting scammers etc
 );
 
 CREATE TABLE IF NOT EXISTS messages( -- Send messages to other users
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT, -- NOTE there is no way to send messages yet
     sender INTEGER FOREIGNKEY REFERENCES user(id),
     receiver INTEGER FOREIGNKEY REFERENCES user(id),
     title varchar(64),

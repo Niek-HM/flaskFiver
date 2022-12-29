@@ -6,8 +6,54 @@
 
 <section class="bg-dark section-dark">
 </section>
-<!-- TODO Make this html page -->
 <section class="bg-light section-light">
 </section>
 
+<!-- Replace "test" with your own sandbox Business account app client ID -->
+<script src="https://www.paypal.com/sdk/js?client-id=ARCJ5TGGXT0mj6qW9Ct8r6MuQmRBRZvVAW_FXbYKQbRhf5L4v4wpx1cKvjsV-JA0TxnNQgpxCYbnvan6&currency=USD"></script>
+
+
+<p>Total amount: {{amount}} (It is in sandbox mode so even if you pay nothing will go off your card)</p> <!-- TODO display the indevidial products, amount and allow people to add/remove items-->
+<!-- Set up a container element for the button -->
+<div id="paypal-button-container"></div>
+
+<script>
+    paypal.Buttons({
+        // Sets up the transaction when a payment button is clicked
+        createOrder: (data, actions) => {
+            return actions.order.create({
+                "purchase_units": [{
+                    "amount": {
+                        "currency_code": "USD",
+                        "value": "{{amount}}",
+                        "breakdown": {
+                            "item_total": {  /* Required when including the items array */
+                                "currency_code": "USD",
+                                "value": "{{amount}}"
+                            }
+                        }
+                    },
+                }]
+            });
+        },
+        
+        // Finalize the transaction after payer approval
+        onApprove: (data, actions) => {
+            return fetch(`/api/orders/${data.orderID}/capture`, {
+                method: "post",
+            })
+                .then((response) => response.json())
+                .then((orderData) => {
+                    // Successful capture! For dev/demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    const transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+                    // When ready to go live, remove the alert and show a success message within this page. For example:
+                    // const element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+        }
+    }).render('#paypal-button-container');
+</script>
 {% endblock %}

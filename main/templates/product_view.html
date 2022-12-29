@@ -12,14 +12,14 @@
             <div class="col-md-6 border-end">	
                 <div class="d-flex flex-column justify-content-center">	
                     <div class="main_image">	
-                        <img src="/static/img/products/{{products[5]}}/{{images[0][0]}}" id="main_product_image" width="350">	
+                        <img src="/static/img/products/{{product[5]}}/{{images[0][0]}}" id="main_product_image" width="350">	
                     </div>	
                     <div class="thumbnail_images">	
                         <ul id="thumbnail">	
-                            <li><img onclick="changeImage(this)" src="/static/img/products/{{products[5]}}/{{images[1][0]}}" width="70"></li>	
-                            <li><img onclick="changeImage(this)" src="/static/img/products/{{products[5]}}/{{images[2][0]}}" width="70"></li>	
-                            <li><img onclick="changeImage(this)" src="/static/img/products/{{products[5]}}/{{images[3][0]}}" width="70"></li>	
-                            <li><img onclick="changeImage(this)" src="/static/img/products/{{products[5]}}/{{images[4][0]}}" width="70"></li>	
+                            <li><img onclick="changeImage(this)" src="/static/img/products/{{product[5]}}/{{images[1][0]}}" width="70"></li>	
+                            <li><img onclick="changeImage(this)" src="/static/img/products/{{product[5]}}/{{images[2][0]}}" width="70"></li>	
+                            <li><img onclick="changeImage(this)" src="/static/img/products/{{product[5]}}/{{images[3][0]}}" width="70"></li>	
+                            <li><img onclick="changeImage(this)" src="/static/img/products/{{product[5]}}/{{images[4][0]}}" width="70"></li>	
                         </ul>	
                     </div>	
                 </div>	
@@ -44,8 +44,10 @@
                         </div>	<span>441 reviews</span>	
                     </div>	
                     <div class="buttons d-flex flex-row mt-5 gap-3">	
-                        <button class="btn btn-outline-dark">Buy Now</button>	
-                        <button class="btn btn-dark">Add to Basket</button>	
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            <button type="submit" class="btn btn-outline-dark" name="buy" value="buy" id="buy">Buy Now</button>	
+                            <button type="submit" class="btn btn-dark" name="add" value="add" id="add">Add to Basket</button>	
+                        </form>
                     </div>	
                 </div>	
             </div>	

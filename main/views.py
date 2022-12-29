@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request, session
+from flask import render_template, redirect, url_for, request, session, make_response
 
 from handles.databaseHandle import ReadWrite
 from handles.userHandle import User
@@ -113,10 +113,17 @@ def accountView(userToView):
     if user == []: return redirect(url_for('logout'))
 
     if request.method == 'POST': 
-        pass # TODO Make changes to your account
-        # username = ...
-        # pfp = ...
-        # etc....
+        # TODO Make changes to your account
+        f = request.values.get('file')
+        if f != '':
+            path_ = f'{dir_}/static/img/user/pfp/{user[0]}/'
+            if not os.path.exists(path_): os.makedirs(path_)
+
+            path = f'{path_}.{user[0]}{secure_filename(f.filename).split(".")[-1]}' # FIXME Test if this overwrites the old pfp or just bugs out
+
+            f.save((path)) # NOTE file name = userID_productname
+        else: path = 'DEFAULT'
+        
     
     if not userToView.isnumeric(): # NOTE Check if the input we gave is a name
         try: 
@@ -146,31 +153,67 @@ def productView(id):
     user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
-    product, images, comments, ratings = [], [], [], []
+    product, images, comments, ratings, resp = [], [], [], [], False
     
     if id.isnumeric(): 
         try: 
             product = database.read('products', 'id, description, title, body, price, creator', f'WHERE id="{id}"')[0]
-            
-            images = database.read('productimg', 'img, pos', f'WHERE product IN {product}').sort(key=lambda i: i[1]) # NOTE Get all the images from the database and sort them by the pos value
-            comments = database.read('comments', 'commenter, stars, comment, creation', f'WHERE for="{product[0]}"').sort(key=lambda i: i[3], reverse=True)
+
+            # .sort(key=lambda i: i[1]) # NOTE Get all the images from the database and sort them by the pos value
+            images = database.read('productimg', 'img, pos', f'WHERE product="{id}"')
+            comments = database.read('comments', 'comenter, stars, comment, creation', f'WHERE for="{product[0]}"').sort(key=lambda i: i[3], reverse=True)
             ratings = database.read('ratings', 'rating', f'where for="{product[5]}"')
         except IndexError as e: 
             print(e)
             return render_template('notFound.html')
 
-        
+    
     rating = 0
     for i in ratings: rating += int(i[0])
-    rating = rating/ratings.__len__() # NOTE Make an avarage from all the received ratings
+    if ratings.__len__() > 0: rating = rating/ratings.__len__() # NOTE Make an avarage from all the received ratings
+    else: rating = 'No ratings yet..' # FIXME Make this visible in the html
+
+    # FIXME temp fix since not more then 1 image can be added right now
+    images = (images[0], images[0], images[0], images[0], images[0])
+
+    if request.method == 'POST':
+        try: 
+            if request.form['buy']:
+                resp = make_response(redirect(url_for('buyproduct'))) # FIXME Check if this works!!!
+                
+                if 'buy' in request.cookies.keys(): resp.set_cookie(f'buy', f"{request.cookies.get('buy')},{id}")
+                else: resp.set_cookie('buy', id)
+                return resp
+
+        except KeyError:
+            if request.form['add']:
+                resp = make_response(render_template('product_view.html', product=product, images=images, comments=comments, rating=rating))
+                
+                if 'buy' in request.cookies.keys(): resp.set_cookie(f'buy', f"{request.cookies.get('buy')},{id}")
+                else: resp.set_cookie('buy', id)
+                return resp # BUG This can still return an error if a users sends a post from some other program but this should not happen on this scale.
 
     return render_template('product_view.html', product=product, images=images, comments=comments, rating=rating)
 
-def buyView(id): # BUG I still need to make ppl able to actually buy items
+def buyView(): # BUG Returns the products, prices etc, but you can't actually pay and it does not show on the screen
     user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
-    return render_template('but_product.html', product=id)
+    productlist = request.cookies.get('buy').split(',')
+
+    strs = ''
+    for i in productlist: # FIXME This is a temporary fix
+        if i == '': continue
+        elif strs == '': strs = f'id="{i}"'
+        else: strs += f' OR id="{i}"'
+
+    products = database.read('products', 'id, title, price', f'WHERE {strs}')
+    
+    total = 0
+    for i in products:
+        total += i[2] * productlist.count(str(i[0]))
+
+    return render_template('buy_product.html', product=products, amount=total)
 
 def searchView(search): 
     user = userhandle.isLoggedIn(session)
@@ -243,21 +286,22 @@ def createProductView():
         if errors: return render_template('create_product.html', errors=errors)
 
         path = path.split('/')[-1] # NOTE Only save the filename
-        saved = database.write('products', 'img, description, title, body, price, creator', [path, short_descr, title, body, price, user[0]])
+        saved1 = database.write('products', 'description, title, body, price, creator', [short_descr, title, body, price, user[0]])
+        saved2 = database.write('productimg', 'product, img, pos', [database.cursor.lastrowid, path, 0])
         
-        if saved: return redirect(url_for('home')) # BUG Should go to the product instead of home
-        else: return render_template('create_product.html', errors=['There was an error when saving to the database.'])
+        if saved1 and saved2: return redirect(url_for('home')) # BUG Should go to the product instead of home
+        else: return render_template('create_product.html', errors=['There was an error when saving to the database.']) # FIXME Should check on wich save the error was
 
     return render_template('create_product.html', errors=[])
 
-#! Not finished
+#! It works, just don't forget to make the body a bit larger
 def contactView():
     user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
     errors = []
 
-    if request.method == 'POST': # FIXME It works, just make the html body a bit larger
+    if request.method == 'POST':
         title = request.values.get('title')
         body = request.values.get('body')
         if title == '' or body == '': errors.append('Make sure all fields are filled in before trying to send anything.') 
