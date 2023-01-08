@@ -143,7 +143,7 @@ def accountView(userToView):
     same = '0'
     if userToView != []: # NOTE If the user exists we will get all the products they have and find their profile picture
         userToView[2] = userToView[2] if userToView[2] != None else 'default.png'
-        products = database.read('products', 'creator, img, description, title, body, price', f'WHERE creator="{userToView[0]}"') # Still need to get a rating
+        products = database.read('products', 'creator, description, title, body, price', f'WHERE creator="{userToView[0]}"') # Still need to get a rating
         same = '1' if userToView[0] == user[0] else '0'
 
     if userToView != []: return render_template('account.html', user=userToView, same=same, products=products)
