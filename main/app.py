@@ -40,5 +40,5 @@ class MainApp:
 
 if __name__ == '__main__':
     app = MainApp()#.app.run('0.0.0.0', 5000, debug=False) # options=....
-    app.run('0.0.0.0', 5000, debug=False)
+    app.app.run('0.0.0.0', 5000, debug=False)
     # NOTE Atm waitress.serve() runs the server on the local wifi, anyone can access by typing in your ip...

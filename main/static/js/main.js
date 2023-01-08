@@ -24,3 +24,15 @@ function changeImage(element) { // NOTE Change first image when pressed
     var main_prodcut_image = document.getElementById('main_product_image');
     main_prodcut_image.src = element.src;
 }
+
+function search() {
+    var input = document.getElementById('searchInput').value.split(':');
+    switch(input[0]) {
+        case 'user': var win = window.open('http://niekhm.pythonanywhere.com/user/'+input.slice(1)); break;
+        case 'product': var win = window.open('http://niekhm.pythonanywhere.com/search/' + input.slice(1)); break;
+        case '': var win = window.open('http://niekhm.pythonanywhere.com/search/*/'); break;
+        default: var win = window.open('http://niekhm.pythonanywhere.com/search/' + input.toString().replace(',', ''))
+    }
+
+    win.focus();
+}
