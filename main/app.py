@@ -6,7 +6,7 @@ import bcrypt
 from handles.databaseHandle import Create, ReadWrite
 Create() # NOTE Initialize the database
 
-from waitress import serve # NOTE Serve it on a local network
+#from waitress import serve # NOTE Serve it on a local network
 
 class MainApp:
     def __init__(self): #* Initialize the app and define all data
