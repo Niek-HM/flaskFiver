@@ -114,15 +114,15 @@ def accountView(userToView):
 
     if request.method == 'POST': 
         # TODO Make changes to your account
-        f = request.values.get('file')
-        if f != '':
+        f = request.files['file']
+        if f != '' or f != None:
             path_ = f'{dir_}/static/img/user/pfp/{user[0]}/'
             if not os.path.exists(path_): os.makedirs(path_)
 
-            path = f'{path_}.{user[0]}{secure_filename(f.filename).split(".")[-1]}' # FIXME Test if this overwrites the old pfp or just bugs out
+            path = f'{path_}{user[0]}.{secure_filename(f.filename).split(".")[-1]}' # FIXME Test if this overwrites the old pfp or just bugs out
 
             f.save((path)) # NOTE file name = userID_productname
-        else: path = 'DEFAULT'
+            database.changeData('user', ['pfp'], [f'{user[0]}/{user[0]}.{secure_filename(f.filename).split(".")[-1]}'], f'WHERE id="{user[0]}"')
         
     
     if not userToView.isnumeric(): # NOTE Check if the input we gave is a name
