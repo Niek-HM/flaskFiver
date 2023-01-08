@@ -16,7 +16,7 @@ class MainApp:
 
         self.get_possible_urls() # NOTE Add the url rules
 
-        serve(self.app, host='0.0.0.0', port=5000, threads=4) # NOTE Host the application
+        #serve(self.app, host='0.0.0.0', port=5000, threads=4) # NOTE Host the application
     
     def get_possible_urls(self): # NOTE Add url rules (The all the sub places you can go to)
         self.app.add_url_rule('/', 'home', homeView, methods=['GET', 'POST']) # NOTE Add a url role to a sub link with a view and methods
@@ -39,5 +39,6 @@ class MainApp:
         self.app.add_url_rule('/contact_us/', 'contact', contactView, methods=['GET', 'POST'])
 
 if __name__ == '__main__':
-    MainApp()#.app.run('0.0.0.0', 5000, debug=False) # options=....
+    app = MainApp()#.app.run('0.0.0.0', 5000, debug=False) # options=....
+    app.run('0.0.0.0', 5000, debug=False)
     # NOTE Atm waitress.serve() runs the server on the local wifi, anyone can access by typing in your ip...
