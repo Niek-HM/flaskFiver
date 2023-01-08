@@ -11,7 +11,7 @@ from waitress import serve # NOTE Serve it on a local network
 class MainApp:
     def __init__(self): #* Initialize the app and define all data
         self.app = Flask(__name__)
-        self.app.debug = True # HACK Delete this before handing in the project/putting it on a server
+        #self.app.debug = False # HACK Delete this before handing in the project/putting it on a server
         self.app.secret_key = bcrypt.gensalt() # NOTE Generates a different salt every time the server is run so cookies won't always work properly
 
         self.get_possible_urls() # NOTE Add the url rules
