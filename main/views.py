@@ -141,8 +141,9 @@ def accountView(userToView):
 
     products = []
     same = '0'
+    
     if userToView != []: # NOTE If the user exists we will get all the products they have and find their profile picture
-        userToView[2] = userToView[2] if userToView[2] != None else 'default.png'
+        userToView[2] = userToView[2] if userToView[2] != None and userToView[2] != '' else 'default.png'
         products = database.read('products', 'creator, description, title, body, price', f'WHERE creator="{userToView[0]}"') # Still need to get a rating
         same = '1' if userToView[0] == user[0] else '0'
 
@@ -199,19 +200,22 @@ def buyView(): # BUG Returns the products, prices etc, but you can't actually pa
     user = userhandle.isLoggedIn(session)
     if user == []: return redirect(url_for('logout'))
 
-    productlist = request.cookies.get('buy').split(',')
+    if 'buy' in request.cookies: 
+        productlist = request.cookies.get('buy').split(',')
 
-    strs = ''
-    for i in productlist: # FIXME This is a temporary fix
-        if i == '': continue
-        elif strs == '': strs = f'id="{i}"'
-        else: strs += f' OR id="{i}"'
+        strs = ''
+        for i in productlist: # FIXME This is a temporary fix
+            if i == '': continue
+            elif strs == '': strs = f'id="{i}"'
+            else: strs += f' OR id="{i}"'
 
-    products = database.read('products', 'id, title, price', f'WHERE {strs}')
+        products = database.read('products', 'id, title, price', f'WHERE {strs}')
+        
+        total = 0
+        for i in products:
+            total += i[2] * productlist.count(str(i[0]))
     
-    total = 0
-    for i in products:
-        total += i[2] * productlist.count(str(i[0]))
+    else: products, total = [], 0
 
     return render_template('buy_product.html', product=products, amount=total)
 

@@ -20,13 +20,14 @@
                     <div class="card-body text-center">
                         <form action="" method="POST" enctype="multipart/form-data">
                             <input type="file" accept="image/png, image/jpeg" id="file" style="display: none; height:0px; width: 0px;" name="file" class="form-control form-control-lg" placeholder="Enter a valid image" />
-                            <img src="/static/img/user/pfp/{{user[2]}}" id="fileImg" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;" onclick="selectFile()">
+                            {% if same == '1' %}<img src="/static/img/user/pfp/{{user[2]}}" id="fileImg" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;" onclick="selectFile()">
+                            {% else %}<img src="/static/img/user/pfp/{{user[2]}}" id="fileImg" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">{% endif %}
                             <a style="display: none;" id="fileInputName">No image selected.</a>
                             <button type="submit" id="fileButton" value="Submit" style="display: none;" class="btn btn-secondary" style="width: 25%;">Save</button>
                         </form>
                             {% if user[15] or user[16] %}<i class="bi bi-check"></i>{% endif %}<h5 class="my-3"> <b>{{user[1]}}</b></h5> <!--* Username, with checkmark if admin/mod -->
                         <p class="text-muted mb-1">Seller: {{user[13]}}</p>
-                        <p class="text-muted mb-1">{{user[7]}}</p> <!-- Rating -->
+                        <p class="text-muted mb-1">Rating: {{user[7]}}</p> <!-- Rating -->
                         <div class="d-flex justify-content-center mb-2">
                             <button type="button" class="btn btn-primary">Follow</button>
                             <!--<button type="button" class="btn btn-outline-primary ms-1">Message</button>-->
