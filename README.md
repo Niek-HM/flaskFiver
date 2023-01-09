@@ -17,7 +17,7 @@ But for everyone who wants to make their own versions:
 
 1. Flask
 2. sqlite
-3. waitress
+3. waitress -- This was removed in the latest version to allow for hosting on pythonanywhere.com
 4. bcrypt
 5. dotenv
 
